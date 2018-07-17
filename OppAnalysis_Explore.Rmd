@@ -1,0 +1,133 @@
+---
+title: "Gasbarro Capstone Project"
+output:
+  html_document: default
+  ioslides_presentation: default
+  pdf_document: default
+  slidy_presentation: default
+  word_document: default
+date: "January 1, 2018"
+params:
+  symbol: Not Applicable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## Importing Opportunities Spreadsheet
+Original data is in Microsoft Excel spreadsheet, Opportunities_2016_2018.xlsx
+
+
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+## IMPORTING THE SPREADSHEET
+
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(readxl)
+library(stringr)
+library(lubridate)
+library(ggplot2)
+library(xts)
+library(scales)
+
+
+# DATA EXPLORATION
+
+# str(opps_orig)
+# head(opps_orig)
+# tail(opps_orig)
+
+#ggplot(opps_orig) + aes('Forecasted Amount') + geom_histogram()
+
+#hist(opps_orig$`Forecasted Amount`)
+
+#plot(opps_orig$'Close Date', opps_orig$'Forecasted Amount')
+
+summary(opps_revised)
+
+opps_revised %>% filter(expected_revenue_usd > 100000000)
+opps_revised %>% filter(forecasted_amount_usd > 100000000)
+
+# Need to learn how to control the values on the X and Y axis
+
+ggplot(opps_revised, aes(stage_simple, expected_revenue_usd)) +
+  geom_point(position = position_jitter(0.1, 0)) +
+  scale_y_log10()
+
+ggplot(opps_revised, aes(x = forecasted_amount_usd)) + 
+  geom_histogram() +
+  scale_x_log10(labels=dollar)
+
+ggplot(opps_revised, aes(x = expected_revenue_usd)) + 
+  geom_histogram() +
+  scale_x_log10(labels=dollar)
+
+ggplot(opps_revised, aes(x = expected_revenue_usd)) + 
+  geom_histogram() +
+  scale_x_log10(labels=dollar)
+
+ggplot(opps_revised, aes(x = expected_revenue_currency)) + 
+  geom_bar()
+
+ggplot(opps_revised, aes(x = expected_revenue_currency, fill=fiscal_year)) + 
+  geom_bar()
+
+ggplot(opps_revised, aes(x = industry_simple)) + 
+  geom_bar()
+
+ggplot(opps_revised, aes(x = fiscal_year, fill=stage_simple)) + 
+  geom_bar()
+
+ggplot(opps_orig, aes(x = industry_simple, fill=stage_simple)) + 
+  geom_bar()
+ 
+```
+
+
+QUESTIONS
+
+HOW DO YOU MAKE A CHART BIGGER?
+
+HOW DO YOU FILTER ggplot FOR SPECIFIC VALUES?
+
+HOW DO I FIND AND REMOVE/CORRECT OUTLIER
+
+TOO MANY VALUES - HOW DO I PARE DOWN / REDUCE SO PLOTS DONT LOOK OVERPOPULATED?
+
+What is overall WON AND CLOSED, vs. DROPPED and LOST?
+
+What is overall WON AND CLOSED, vs. DROPPED and LOST - by YEAR?
+
+What is overall WON AND CLOSED, vs. DROPPED and LOST - by INDUSTRY?
+
+What is overall WON AND CLOSED, vs. DROPPED and LOST - by TERRITORY?
+
+What is overall WON AND CLOSED, vs. DROPPED and LOST - by PARTNER or INSIDE? by TERRITORY?
+
+
+Are there INDUSTRIES where CLOSED is more common than LOST
+
+How does ENERGY compare to the other industries
+
+For the CLOSED deals, what are the high, low, and mean for the revenue?
+
+Organized by INDUSTRY?
+
+
+WE DONT HAVE TERRITORY - HOW DO WE GET?
+Organized by TERRITORY?
+Do some TERRITORIES do better at CLOSING deals than others?
+Do some TERRITORIES do better at CLOSING deals in ENERGY?
+How do they companre with other industries?
+
+WHen do deals get WON AND CLOSED or LOST during a financial Quarter?
+Plot week-by-week over a period of time.
+
