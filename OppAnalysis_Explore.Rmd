@@ -1,11 +1,12 @@
 ---
 title: "Gasbarro Capstone Project"
 output:
-  html_document: default
+  md_document: default
   ioslides_presentation: default
   pdf_document: default
   slidy_presentation: default
   word_document: default
+  html_document: default
 date: "January 1, 2018"
 params:
   symbol: Not Applicable
@@ -50,7 +51,7 @@ library(scales)
 #hist(opps_orig$`Forecasted Amount`)
 
 #plot(opps_orig$'Close Date', opps_orig$'Forecasted Amount')
-
+load(file="C:\\Users\\pgasbarro\\Documents\\RStudioWorkspace\\Capstone Project\\opps_revised.rdata")
 summary(opps_revised)
 
 opps_revised %>% filter(expected_revenue_usd > 100000000)
@@ -86,48 +87,9 @@ ggplot(opps_revised, aes(x = industry_simple)) +
 ggplot(opps_revised, aes(x = fiscal_year, fill=stage_simple)) + 
   geom_bar()
 
-ggplot(opps_orig, aes(x = industry_simple, fill=stage_simple)) + 
-  geom_bar()
+#ggplot(opps_orig, aes(x = industry_simple, fill=stage_simple)) + 
+#  geom_bar()
  
 ```
 
-
-QUESTIONS
-
-HOW DO YOU MAKE A CHART BIGGER?
-
-HOW DO YOU FILTER ggplot FOR SPECIFIC VALUES?
-
-HOW DO I FIND AND REMOVE/CORRECT OUTLIER
-
-TOO MANY VALUES - HOW DO I PARE DOWN / REDUCE SO PLOTS DONT LOOK OVERPOPULATED?
-
-What is overall WON AND CLOSED, vs. DROPPED and LOST?
-
-What is overall WON AND CLOSED, vs. DROPPED and LOST - by YEAR?
-
-What is overall WON AND CLOSED, vs. DROPPED and LOST - by INDUSTRY?
-
-What is overall WON AND CLOSED, vs. DROPPED and LOST - by TERRITORY?
-
-What is overall WON AND CLOSED, vs. DROPPED and LOST - by PARTNER or INSIDE? by TERRITORY?
-
-
-Are there INDUSTRIES where CLOSED is more common than LOST
-
-How does ENERGY compare to the other industries
-
-For the CLOSED deals, what are the high, low, and mean for the revenue?
-
-Organized by INDUSTRY?
-
-
-WE DONT HAVE TERRITORY - HOW DO WE GET?
-Organized by TERRITORY?
-Do some TERRITORIES do better at CLOSING deals than others?
-Do some TERRITORIES do better at CLOSING deals in ENERGY?
-How do they companre with other industries?
-
-WHen do deals get WON AND CLOSED or LOST during a financial Quarter?
-Plot week-by-week over a period of time.
 

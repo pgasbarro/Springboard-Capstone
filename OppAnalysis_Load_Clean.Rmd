@@ -1,11 +1,12 @@
 ---
 title: "Opportunity Analysis: Load and Clean"
 output:
-  html_document: default
+  md_document: default
   ioslides_presentation: default
-  pdf_document: default
+  html_document: default
   slidy_presentation: default
   word_document: default
+  pdf_document: default
 date: "January 1, 2018"
 params:
   symbol: Not Applicable
@@ -28,12 +29,11 @@ Original data is in Microsoft Excel spreadsheet, Opportunities_2016_2018.xlsx
 ```{r echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
 ## IMPORTING THE SPREADSHEET
 
-install.packages("readxl")
-install.packages("broom")
+#install.packages("readxl")
+#install.packages("broom")
 library(readxl)
 library(tidyverse)
 library(dplyr)
-library(readxl)
 library(stringr)
 library(lubridate)
 library(ggplot2)
@@ -212,5 +212,6 @@ opps_revised <- opps_revised %>%
       industry == "Utilities" ~ "Utilities",
       industry == "" ~ "Missing"
     )
-  )
+  )C:\Users\pgasbarro\Documents\RStudioWorkspace\Capstone Project
 
+save(opps_revised,file="C:\\Users\\pgasbarro\\Documents\\RStudioWorkspace\\Capstone Project\\opps_revised.rdata")
