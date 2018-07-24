@@ -51,7 +51,7 @@ library(scales)
 #hist(opps_orig$`Forecasted Amount`)
 
 #plot(opps_orig$'Close Date', opps_orig$'Forecasted Amount')
-load(file="C:\\Users\\pgasbarro\\Documents\\RStudioWorkspace\\Capstone Project\\opps_revised.rdata")
+opps_revised <- readRDS("C:\\Users\\pgasbarro\\Documents\\RStudioWorkspace\\Springboard-Capstone\\opps_revised.rds")
 summary(opps_revised)
 
 opps_revised %>% filter(expected_revenue_usd > 100000000)

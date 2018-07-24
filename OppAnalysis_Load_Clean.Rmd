@@ -1,9 +1,9 @@
 ---
 title: "Opportunity Analysis: Load and Clean"
 output:
-  md_document: default
-  ioslides_presentation: default
   html_document: default
+  ioslides_presentation: default
+  md_document: default
   slidy_presentation: default
   word_document: default
   pdf_document: default
@@ -15,16 +15,6 @@ params:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-## Importing Opportunities Spreadsheet
-Original data is in Microsoft Excel spreadsheet, Opportunities_2016_2018.xlsx
-
 
 ```{r echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
 ## IMPORTING THE SPREADSHEET
@@ -45,7 +35,7 @@ library(scales)
 columns <- c("account_name","opportunity_name","opportunity_type","lead_source","forecasted_amount_currency","forecasted_amount","expected_revenue_currency","expected_revenue","close_date","next_step","stage","fiscal_period","age","created_date","opportunity_owner","owner_role","industry","sic_code","description")
 
 # Import the the first Excel sheet of Opportunities_2016_2018.xlsx with column names set to TRUE
-opps_orig <- read_excel("Opportunities_2016_2018.xlsx", sheet=1, col_names=columns, skip=1)
+opps_orig <- read_excel("C:\\Users\\pgasbarro\\Documents\\RStudioWorkspace\\Capstone Project\\Opportunities_2016_2018.xlsx", sheet=1, col_names=columns, skip=1)
 
 ## Here is a summary of the data we just loaded
 summary(opps_orig)
@@ -212,6 +202,8 @@ opps_revised <- opps_revised %>%
       industry == "Utilities" ~ "Utilities",
       industry == "" ~ "Missing"
     )
-  )C:\Users\pgasbarro\Documents\RStudioWorkspace\Capstone Project
+  )
 
-save(opps_revised,file="C:\\Users\\pgasbarro\\Documents\\RStudioWorkspace\\Capstone Project\\opps_revised.rdata")
+saveRDS(opps_revised,file="C:\\Users\\pgasbarro\\Documents\\RStudioWorkspace\\Springboard-Capstone\\opps_revised.rds")
+
+```
