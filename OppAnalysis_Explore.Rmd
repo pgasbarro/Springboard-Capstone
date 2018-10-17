@@ -41,7 +41,6 @@ library(scales)
 
 
 # DATA EXPLORATION
-
 # str(opps_orig)
 # head(opps_orig)
 # tail(opps_orig)
