@@ -139,6 +139,8 @@ will be posted to Github.
     It is not tracking any series of activities for the Opportunity
     except these 2 dates.
 
+![](OppAnalysis_Statistics_files/figure-markdown_strict/unnamed-chunk-11-1.png)
+
 What’s Next?
 ============
 
