@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
 ## IMPORTING THE SPREADSHEET
 
-#install.packages("readxl")
+install.packages("readxl")
 #install.packages("broom")
 library(readxl)
 library(tidyverse)
@@ -35,7 +35,7 @@ library(scales)
 columns <- c("account_name","opportunity_name","opportunity_type","lead_source","forecasted_amount_currency","forecasted_amount","expected_revenue_currency","expected_revenue","close_date","next_step","stage","fiscal_period","age","created_date","opportunity_owner","owner_role","industry","sic_code","description")
 
 # Import the the first Excel sheet of Opportunities_2016_2018.xlsx with column names set to TRUE
-opps_orig <- read_excel("C:\\Users\\pgasbarro\\Documents\\RStudioWorkspace\\Capstone Project\\Opportunities_2016_2018.xlsx", sheet=1, col_names=columns, skip=1)
+opps_orig <- read_excel("Opportunities_2016_2018.xlsx", sheet=1, col_names=columns, skip=1)
 
 ## Here is a summary of the data we just loaded
 summary(opps_orig)
@@ -204,6 +204,6 @@ opps_revised <- opps_revised %>%
     )
   )
 
-saveRDS(opps_revised,file="C:\\Users\\pgasbarro\\Documents\\RStudioWorkspace\\Springboard-Capstone\\opps_revised.rds")
+saveRDS(opps_revised,file="opps_revised2.rds")
 
 ```

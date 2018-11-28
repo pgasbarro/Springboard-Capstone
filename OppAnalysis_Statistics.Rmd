@@ -222,6 +222,23 @@ ggplot(opps_revised, aes(x=industry_simple, y=expected_revenue)) +
 6. Can you make a time-series plot?
 The Date/Time values in the Opportunities dataframe do not seem to lend themselves to a time-series plot. Each record only captures a single Date/Time variable for the Opportunity - the Create Date and the Close Date. It is not tracking any series of activities for the Opportunity except these 2 dates.
 
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+
+# time series
+# ggplot(opps_revised, aes(x=close_date, y=expected_revenue)) + 
+#  geom_point()
+
+# Convert expected_revenue into expected_revenue_usd
+opps_revised2 <- opps_revised %>%
+  mutate(margin = (forecasted_amount_usd-expected_revenue_usd)/ forecasted_amount_usd)
+
+
+ggplot(opps_revised2, aes(x=close_date, y=margin)) + 
+  geom_point()
+
+
+```
+
 
 # What's Next?
 Section 5.3 Asks: Having made these plots, what are some insights you get from them? Do you see any correlations? Is there a hypothesis you would like to investigate further? What other questions do they lead you to ask?
