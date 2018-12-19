@@ -1,12 +1,12 @@
 ---
 title: "Gasbarro Capstone Project: Opportunities Analysis - Statistics - Section 5"
 output:
-  html_document: default
+  md_document: default
   ioslides_presentation: default
   pdf_document: default
   slidy_presentation: default
   word_document: default
-  md_document: default
+  html_document: default
 date: "November 14, 2018"
 params:
   symbol: Not Applicable
@@ -230,7 +230,7 @@ The Date/Time values in the Opportunities dataframe do not seem to lend themselv
 
 # Convert expected_revenue into expected_revenue_usd
 opps_revised2 <- opps_revised %>%
-  mutate(margin = (forecasted_amount_usd-expected_revenue_usd)/ forecasted_amount_usd)
+  mutate(margin = (forecasted_amount_usd-expected_revenue_usd))
 
 
 ggplot(opps_revised2, aes(x=close_date, y=margin)) + 

@@ -1,12 +1,12 @@
 ---
 title: "Gasbarro Capstone Project: Opportunities Analysis - Statistics - Section 5"
 output:
-  md_document: default
-  ioslides_presentation: default
   pdf_document: default
+  ioslides_presentation: default
+  html_document: default
   slidy_presentation: default
   word_document: default
-  html_document: default
+  md_document: default
 date: "November 14, 2018"
 params:
   symbol: Not Applicable
@@ -186,75 +186,116 @@ ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engin
 
 ```
 
-# Section 5.3 Questions
-
-The following are a list of questions from Section 5.3 exercise, which will be posted to Github.
-
-1. Can you count something interesting?
-As seen the charts abobe, we counted a number of interesting facts on the amount of deals by Forecasted Amount and Expected Revenue, by Stage, and by Industry.
-
-2. Can you find some trends (high, low, increase, decrease, anomalies)?
-We noticed the following
-* Forecasted Amount and Expected Revenue seemed to be in alignment. (Can we statistically say they are correlated? I'm unsure about this.) 
-* The Year 2017 saw the highest count of WON and LOST deals than any other year.
-* The Energy and Utilities sector also saw higher deal activities than any other sectors we're tracking (Distribution, Engineering). 
-
-3. Can you make a bar plot or a histogram?
-As demonstrated above, we made a lot of bar plots and histograms. We might try doing other graphics in the subsequent demonstrations.
-
-4. Can you compare two related quantities?
-Yes and No. The bar graphs above do have fills that allow us to compare data for Stages, Industries and Year (depending on the configuration). However, I was unable to figure out a way to compare the Forecasted Amount and Expected Revenue by putting one graph on top of the other.
-
-5. Can you make a scatterplot?
-I can make a scatterplot. However, I'm not sure that the volume of data in the Opportunities datafram (over 200K) lends itself to this kind of visual display, not without significant filtering. The bar charts appear to be better at group large volumes of records and variables in a visually pleasing way.
+Size of Opportunities: Up to $50K
 
 ```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
-
-# Basic scatter plot
-ggplot(opps_revised, aes(x=industry_simple, y=expected_revenue)) + 
-  geom_point()
-
-ggplot(opps_revised, aes(x=industry_simple, y=expected_revenue)) + 
-  geom_point(size=2, shape=23)
-
-```
-
-6. Can you make a time-series plot?
-The Date/Time values in the Opportunities dataframe do not seem to lend themselves to a time-series plot. Each record only captures a single Date/Time variable for the Opportunity - the Create Date and the Close Date. It is not tracking any series of activities for the Opportunity except these 2 dates.
-
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
-
-# time series
-# ggplot(opps_revised, aes(x=close_date, y=expected_revenue)) + 
-#  geom_point()
-
-# Convert expected_revenue into expected_revenue_usd
-opps_revised2 <- opps_revised %>%
-  mutate(margin = (forecasted_amount_usd-expected_revenue_usd)/ forecasted_amount_usd)
-
-
-ggplot(opps_revised2, aes(x=close_date, y=margin)) + 
-  geom_point()
-
-
+ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, shape = industry_simple, color=stage_simple )) +
+  geom_point() +
+  scale_y_continuous(limits = c(0,50000))
+  
 ```
 
 
-# What's Next?
-Section 5.3 Asks: Having made these plots, what are some insights you get from them? Do you see any correlations? Is there a hypothesis you would like to investigate further? What other questions do they lead you to ask?
+Size of Opportunities: $50K to $100K
 
-Some of my ideas for Section 6 exercises and beyond.
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, shape = industry_simple, color=stage_simple )) +
+  geom_point() +
+  scale_y_continuous(limits = c(50000,100000))
+  
+```
 
-1. Graphics beyond bar charts, or advanced bar charts (instead of one bar with multiple fills, multiple bars grouped together with different fills)
+Size of Opportunities: $100K to $500K
 
-2. Comparisons and correlations for the following variables
-* Lead Source
-* Currency
-* Territory - this could be a new variable, extrapolated from Currency (by as Nation instead of Dollar Symbol) - will require additional change to dataframe
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, shape = industry_simple, color=stage_simple )) +
+  geom_point() +
+  scale_y_continuous(limits = c(100000,500000))
+  
+```
 
-3. I think there are more combinatorials to be tried - Dollar Amounts vs. Stage, Dollar Amounts vs. Industry, Lead Source vs. Industry
+Size of Opportunities: $500K to $1M
 
-4. Trying to visualize 3 or 4 sets of variables in the same graph. How is this possible?
-* Example: For each Industry, a break down by Year of the number of deals WON and LOST, and the Total Dollar Amounts (Forecasted and/or Expect) for WON and LOST.
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, shape = industry_simple, color=stage_simple )) +
+  geom_point() +
+  scale_y_continuous(limits = c(500000,1000000))
+  
+```
 
+Size of Opportunities: $1M above
 
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, shape = industry_simple, color=stage_simple )) +
+  geom_point() +
+  scale_y_continuous(limits = c(1000000,50000000))
+  
+```
+
+WON Opportunities: Up to $50K 
+Try to smooth and see if pattern emerges
+Take out the colors and shaping, and try to get into a smooth line
+
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd)) +
+  geom_point() +
+  scale_y_continuous(limits = c(0,50000)) +
+  geom_smooth()
+```
+
+WON Opportunities: Up to $1M
+Smoothing work - now remove the points and just see the line, colored by industry
+An interesting pattern emerges:
+1. Utilities dollar amounts continuously increase over time
+2. Distribution and Engineering dollar amounts have gone down
+
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution","Everything Else")), aes(x = close_date, y = forecasted_amount_usd, color=industry_simple)) +
+  scale_y_continuous(limits = c(0,1000000)) +
+  geom_smooth()
+```
+
+HELP!!!
+How can get the lines to display WON, LOSS, WIP, as opposed to industry?
+When we change the following to stage_simple, no lines appear
+
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution","Everything Else")), aes(x = close_date, y = forecasted_amount_usd)) +
+  geom_point(alpha=0.2) +
+  scale_y_continuous(limits = c(100000,500000)) +
+  geom_smooth(aes(col=industry_simple), se=FALSE, linetype=1)
+  
+```
+
+Try another track: Use facet_grid to compare across Stages
+
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution","Everything Else")), aes(x = close_date, y = forecasted_amount_usd)) +
+  geom_point(alpha=0.2) +
+  scale_y_continuous(limits = c(100000,500000)) +
+  geom_jitter() +
+  facet_grid(. ~ stage_simple)
+  
+```
+
+BETTER! Now use facet_grid to compare across Industry
+
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution","Everything Else")), aes(x = close_date, y = forecasted_amount_usd, col=stage_simple)) +
+  geom_point(alpha=0.2) +
+  scale_y_continuous(limits = c(100000,500000)) +
+  geom_jitter() +
+  facet_grid(. ~ industry_simple)
+  
+```
+
+BETTER! Move Industry to color, and Stage to the facet
+
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, col=industry_simple)) +
+  geom_point(alpha=0.2) +
+  scale_y_continuous(limits = c(100000,500000)) +
+  geom_jitter() +
+  facet_grid(. ~ stage_simple)
+  
+```

@@ -93,82 +93,51 @@ What if we break down by year?
 
 ![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
-Section 5.3 Questions
-=====================
+Size of Opportunities: Up to $50K
 
-The following are a list of questions from Section 5.3 exercise, which
-will be posted to Github.
+![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 
-1.  Can you count something interesting? As seen the charts abobe, we
-    counted a number of interesting facts on the amount of deals by
-    Forecasted Amount and Expected Revenue, by Stage, and by Industry.
-
-2.  Can you find some trends (high, low, increase, decrease, anomalies)?
-    We noticed the following
-
--   Forecasted Amount and Expected Revenue seemed to be in alignment.
-    (Can we statistically say they are correlated? I’m unsure about
-    this.)
--   The Year 2017 saw the highest count of WON and LOST deals than any
-    other year.
--   The Energy and Utilities sector also saw higher deal activities than
-    any other sectors we’re tracking (Distribution, Engineering).
-
-1.  Can you make a bar plot or a histogram? As demonstrated above, we
-    made a lot of bar plots and histograms. We might try doing other
-    graphics in the subsequent demonstrations.
-
-2.  Can you compare two related quantities? Yes and No. The bar graphs
-    above do have fills that allow us to compare data for Stages,
-    Industries and Year (depending on the configuration). However, I was
-    unable to figure out a way to compare the Forecasted Amount and
-    Expected Revenue by putting one graph on top of the other.
-
-3.  Can you make a scatterplot? I can make a scatterplot. However, I’m
-    not sure that the volume of data in the Opportunities datafram (over
-    200K) lends itself to this kind of visual display, not without
-    significant filtering. The bar charts appear to be better at group
-    large volumes of records and variables in a visually pleasing way.
-
-![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-10-1.png)![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-10-2.png)
-
-1.  Can you make a time-series plot? The Date/Time values in the
-    Opportunities dataframe do not seem to lend themselves to a
-    time-series plot. Each record only captures a single Date/Time
-    variable for the Opportunity - the Create Date and the Close Date.
-    It is not tracking any series of activities for the Opportunity
-    except these 2 dates.
+Size of Opportunities: $50K to $100K
 
 ![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-11-1.png)
 
-What’s Next?
-============
+Size of Opportunities: $100K to $500K
 
-Section 5.3 Asks: Having made these plots, what are some insights you
-get from them? Do you see any correlations? Is there a hypothesis you
-would like to investigate further? What other questions do they lead you
-to ask?
+![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-12-1.png)
 
-Some of my ideas for Section 6 exercises and beyond.
+Size of Opportunities: $500K to $1M
 
-1.  Graphics beyond bar charts, or advanced bar charts (instead of one
-    bar with multiple fills, multiple bars grouped together with
-    different fills)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-13-1.png)
 
-2.  Comparisons and correlations for the following variables
+Size of Opportunities: $1M above
 
--   Lead Source
--   Currency
--   Territory - this could be a new variable, extrapolated from Currency
-    (by as Nation instead of Dollar Symbol) - will require additional
-    change to dataframe
+![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-14-1.png)
 
-1.  I think there are more combinatorials to be tried - Dollar Amounts
-    vs. Stage, Dollar Amounts vs. Industry, Lead Source vs. Industry
+WON Opportunities: Up to $50K Try to smooth and see if pattern emerges
+Take out the colors and shaping, and try to get into a smooth line
 
-2.  Trying to visualize 3 or 4 sets of variables in the same graph. How
-    is this possible?
+![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-15-1.png)
 
--   Example: For each Industry, a break down by Year of the number of
-    deals WON and LOST, and the Total Dollar Amounts (Forecasted and/or
-    Expect) for WON and LOST.
+WON Opportunities: Up to $1M Smoothing work - now remove the points and
+just see the line, colored by industry An interesting pattern emerges:
+1. Utilities dollar amounts continuously increase over time 2.
+Distribution and Engineering dollar amounts have gone down
+
+![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-16-1.png)
+
+HELP!!! How can get the lines to display WON, LOSS, WIP, as opposed to
+industry? When we change the following to stage\_simple, no lines appear
+
+![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-17-1.png)
+
+Try another track: Use facet\_grid to compare across Stages
+
+![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-18-1.png)
+
+BETTER! Now use facet\_grid to compare across Industry
+
+![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-19-1.png)
+
+BETTER! Move Industry to color, and Stage to the facet
+
+![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-20-1.png)
