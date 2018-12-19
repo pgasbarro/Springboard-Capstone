@@ -88,4 +88,49 @@ Opportunities\_2016\_2018.xlsx
     ##  Max.   :1220842100    Max.   :521876775                      
     ##  NA's   :7             NA's   :7
 
-![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-1.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-2.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-3.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-4.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-5.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-6.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-7.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-8.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-9.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-10.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-11.png)
+    ## # A tibble: 1 x 26
+    ##   account_name opportunity_name opportunity_type lead_source
+    ##   <chr>        <chr>            <chr>            <chr>      
+    ## 1 Leonardo S.… Acquisition Rev… New Customer     Account Ex…
+    ## # ... with 22 more variables: forecasted_amount_currency <chr>,
+    ## #   forecasted_amount <dbl>, expected_revenue_currency <chr>,
+    ## #   expected_revenue <dbl>, close_date <dttm>, next_step <chr>,
+    ## #   stage <chr>, fiscal_quarter <chr>, fiscal_year <chr>, age <dbl>,
+    ## #   created_date <dttm>, opportunity_owner <chr>, owner_role <chr>,
+    ## #   industry <chr>, sic_code <dbl>, description <chr>, stage_simple <chr>,
+    ## #   currency_symbol <chr>, currency_rate <dbl>,
+    ## #   forecasted_amount_usd <dbl>, expected_revenue_usd <dbl>,
+    ## #   industry_simple <chr>
+
+    ## # A tibble: 18 x 26
+    ##    account_name opportunity_name opportunity_type lead_source
+    ##    <chr>        <chr>            <chr>            <chr>      
+    ##  1 MASCARO CON… MASCARO CONSTRU… Other            <NA>       
+    ##  2 BARCLAYS BA… BARCLAYS BANK P… Other            <NA>       
+    ##  3 BHP BILLITON BHP BILLITONBHP… Other            <NA>       
+    ##  4 BHP BILLITON BHP BILLITONBHP… Other            <NA>       
+    ##  5 Deutsche Re… Deutsche Renten… Other            <NA>       
+    ##  6 Leonardo S.… Acquisition Rev… New Customer     Account Ex…
+    ##  7 RESTRICTED … RESTRICTED MYQU… Other            <NA>       
+    ##  8 RESTRICTED … RESTRICTED MYQU… Other            <NA>       
+    ##  9 RESTRICTED … RESTRICTED MYQU… Other            <NA>       
+    ## 10 RESTRICTED … RESTRICTED MYQU… <NA>             <NA>       
+    ## 11 Leonardo S.… Leonardo S.p.a.… Other            <NA>       
+    ## 12 COMPUTER SC… COMPUTER SCIENC… Other            <NA>       
+    ## 13 COMPUTER SC… COMPUTER SCIENC… Other            <NA>       
+    ## 14 ASSECO Pola… ASSECO Poland S… Other            <NA>       
+    ## 15 POSTEL       POSTELPOSTEL     Other            <NA>       
+    ## 16 ABB Schweiz… ABB Schweiz AG-… Existing Custom… Account De…
+    ## 17 FEDEX        List Price for … Existing Custom… Account Ex…
+    ## 18 Bank of Ame… Bank of America… Existing Custom… Account Ex…
+    ## # ... with 22 more variables: forecasted_amount_currency <chr>,
+    ## #   forecasted_amount <dbl>, expected_revenue_currency <chr>,
+    ## #   expected_revenue <dbl>, close_date <dttm>, next_step <chr>,
+    ## #   stage <chr>, fiscal_quarter <chr>, fiscal_year <chr>, age <dbl>,
+    ## #   created_date <dttm>, opportunity_owner <chr>, owner_role <chr>,
+    ## #   industry <chr>, sic_code <dbl>, description <chr>, stage_simple <chr>,
+    ## #   currency_symbol <chr>, currency_rate <dbl>,
+    ## #   forecasted_amount_usd <dbl>, expected_revenue_usd <dbl>,
+    ## #   industry_simple <chr>
+
+![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-1.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-2.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-3.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-4.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-5.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-6.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-7.png)![](OppAnalysis_Explore_files/figure-markdown_strict/unnamed-chunk-1-8.png)
