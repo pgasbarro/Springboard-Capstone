@@ -95,49 +95,49 @@ What if we break down by year?
 
 Size of Opportunities: Up to $50K
 
-![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-10-1.png)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/OPRHAD-1.png)
 
 Size of Opportunities: $50K to $100K
 
-![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-11-1.png)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/MALACHY-1.png)
 
 Size of Opportunities: $100K to $500K
 
-![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-12-1.png)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/KENDRA-1.png)
 
 Size of Opportunities: $500K to $1M
 
-![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-13-1.png)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/JENNIFER-1.png)
 
 Size of Opportunities: $1M above
 
-![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-14-1.png)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/HAROLD-1.png)
 
 WON Opportunities: Up to $50K Try to smooth and see if pattern emerges
 Take out the colors and shaping, and try to get into a smooth line
 
-![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-15-1.png)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/GEORGE-1.png)
 
 WON Opportunities: Up to $1M Smoothing work - now remove the points and
 just see the line, colored by industry An interesting pattern emerges:
 1. Utilities dollar amounts continuously increase over time 2.
 Distribution and Engineering dollar amounts have gone down
 
-![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-16-1.png)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/ERNIE-1.png)
 
 HELP!!! How can get the lines to display WON, LOSS, WIP, as opposed to
 industry? When we change the following to stage\_simple, no lines appear
 
-![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-17-1.png)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/DEAN-1.png)
 
 Try another track: Use facet\_grid to compare across Stages
 
-![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-18-1.png)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/CHRIS-1.png)
 
 BETTER! Now use facet\_grid to compare across Industry
 
-![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-19-1.png)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/BOB-1.png)
 
 BETTER! Move Industry to color, and Stage to the facet
 
-![](OppAnalysis_DataStory_files/figure-markdown_strict/unnamed-chunk-20-1.png)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/FRANK-1.png)
