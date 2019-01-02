@@ -383,7 +383,7 @@ Still too crowded, unless we get a larger screen or layout. Let's try adding a n
 
 ```{r, GROUPQUARTER, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 opps_revised2 <- opps_revised %>% 
-  mutate(close_year=year(close_date), close_month=month(close_date), combo_date=paste(close_year, close_month, sep="_"), combo_qtr=paste(close_year, fiscal_quarter, sep="_"))
+  mutate(close_year=year(close_date), close_month=month(close_date), combo_date=paste(close_year, close_month, sep="_"), combo_qtr=quarter(close_date, with_year=TRUE))
 
 opps_combo_qtr <- opps_revised2 %>% 
   filter(stage_simple=="WON") %>%
@@ -392,7 +392,8 @@ opps_combo_qtr <- opps_revised2 %>%
              meanWon=mean(expected_revenue_usd), 
              medianWon=median(expected_revenue_usd),
              maxWon=max(expected_revenue_usd),
-             minWon=min(expected_revenue_usd))
+             minWon=min(expected_revenue_usd)) %>%
+  ungroup()
 
 ggplot(opps_combo_qtr, aes(x = combo_qtr, y = sumWon, color=industry_simple)) +
   geom_point() +
