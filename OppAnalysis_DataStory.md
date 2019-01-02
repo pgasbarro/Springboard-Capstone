@@ -141,3 +141,59 @@ BETTER! Now use facet\_grid to compare across Industry
 BETTER! Move Industry to color, and Stage to the facet
 
 ![](OppAnalysis_DataStory_files/figure-markdown_strict/FRANK-1.png)
+
+Grouping and Summarizing Part 1
+
+In order to group and summarize the datset more effectively with tidyr,
+we need to convert some of the data (such as Close Date) into Discrete
+data variables (such as Month and Year).
+
+Grouping and Summarizing Part 2
+
+Now that we have date variables that can be grouped, we’ll group some
+sets of data, and plot them.
+
+    ## # A tibble: 27 x 6
+    ##    industry                     sumWon meanWon medianWon    maxWon   minWon
+    ##    <chr>                         <dbl>   <dbl>     <dbl>     <dbl>    <dbl>
+    ##  1 Aerospace & Defense          3.18e7  58423.     3532.    3.40e6  -2.53e4
+    ##  2 Automotive                   4.90e7  66110.    10000     2.88e6  -4.99e3
+    ##  3 Computer Hardware            2.96e7  30935.     6221.    2.23e6  -1.78e4
+    ##  4 Computer Software            6.81e8 134966.     1728.    5.22e8  -3.21e6
+    ##  5 Consumer Packaged Goods      4.51e7  22560.     1725.    4.87e6  -3.50e4
+    ##  6 Distribution & Transport…    7.52e7  78695.     6864.    4.71e6  -1.71e4
+    ##  7 Education                    3.24e7  32046.     3826.    2.77e6  -1.98e5
+    ##  8 Energy                       1.41e8 111241.    18688.    4.00e6  -3.67e5
+    ##  9 Engineering & Constructi…    5.92e7  50702.     3886.    1.18e7  -1.90e3
+    ## 10 Federal Public Sector        2.45e7  46614.     3798.    2.22e6   0.    
+    ## # ... with 17 more rows
+
+    ## # A tibble: 6 x 6
+    ##   industry_simple      sumWon meanWon medianWon     maxWon    minWon
+    ##   <chr>                 <dbl>   <dbl>     <dbl>      <dbl>     <dbl>
+    ## 1 Distribution      75232661.  78695.     6864.   4706310    -17126.
+    ## 2 Energy           141387504. 111241.    18688.   4000188.  -367000 
+    ## 3 Engineering       59169236.  50702.     3886.  11800000     -1895 
+    ## 4 Everything Else 2802057077.  64063.     3832. 521876775  -3214097 
+    ## 5 Utilities        159260898. 133833.    14845.  33687033.  -420000 
+    ## 6 <NA>             223138202.  39285.     2492    4085822. -1141460.
+
+    ## # A tibble: 6 x 6
+    ##   industry_simple      sumWon meanWon medianWon     maxWon    minWon
+    ##   <chr>                 <dbl>   <dbl>     <dbl>      <dbl>     <dbl>
+    ## 1 Distribution      75232661.  78695.     6864.   4706310    -17126.
+    ## 2 Energy           141387504. 111241.    18688.   4000188.  -367000 
+    ## 3 Engineering       59169236.  50702.     3886.  11800000     -1895 
+    ## 4 Everything Else 2802057077.  64063.     3832. 521876775  -3214097 
+    ## 5 Utilities        159260898. 133833.    14845.  33687033.  -420000 
+    ## 6 <NA>             223138202.  39285.     2492    4085822. -1141460.
+
+The following chart appears to show the following for each Industry: -
+black line is the MEDIAN - top is 75th percentile - bottom is 25th
+percentile - the “whiskers” represent the additional range of values -
+the dots represent the outliers
+
+The graph seems to show that the Energy industry ranges are in alignment
+with the median and distributions for other industries.
+
+![](OppAnalysis_DataStory_files/figure-markdown_strict/GROUP1EXERCISE-1.png)

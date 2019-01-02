@@ -1,12 +1,12 @@
 ---
 title: "Gasbarro Capstone Project"
 output:
-  md_document: default
+  html_document: default
   ioslides_presentation: default
   pdf_document: default
   slidy_presentation: default
   word_document: default
-  html_document: default
+  md_document: default
 date: "January 1, 2018"
 params:
   symbol: Not Applicable
@@ -39,28 +39,17 @@ library(ggplot2)
 library(xts)
 library(scales)
 
-
-# DATA EXPLORATION
-# str(opps_orig)
-# head(opps_orig)
-# tail(opps_orig)
-
-#ggplot(opps_orig) + aes('Forecasted Amount') + geom_histogram()
-
-#hist(opps_orig$`Forecasted Amount`)
-
-#plot(opps_orig$'Close Date', opps_orig$'Forecasted Amount')
-opps_revised <- readRDS("C:\\Users\\pgasbarro\\Documents\\RStudioWorkspace\\Springboard-Capstone\\opps_revised.rds")
-summary(opps_revised)
+opps_revised <- readRDS("opps_revised.rds")
 
 opps_revised %>% filter(expected_revenue_usd > 100000000)
 opps_revised %>% filter(forecasted_amount_usd > 100000000)
 
 # Need to learn how to control the values on the X and Y axis
 
-ggplot(opps_revised, aes(stage_simple, expected_revenue_usd)) +
-  geom_point(position = position_jitter(0.1, 0)) +
-  scale_y_log10()
+```
+This first plot shows the count (number of deals) and where they fall in a range of US dollars ($). As you can see, the vast majority of them fall in a range between USD 500 and USD 1 million, with the concentration being between USD 1,000 and 900,000.
+
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 
 ggplot(opps_revised, aes(x = forecasted_amount_usd)) + 
   geom_histogram() +

@@ -1,12 +1,12 @@
 ---
 title: "Gasbarro Capstone Project: Opportunities Analysis - Statistics - Section 5"
 output:
-  pdf_document: default
+  md_document: default
   ioslides_presentation: default
   html_document: default
   slidy_presentation: default
   word_document: default
-  md_document: default
+  pdf_document: default
 date: "November 14, 2018"
 params:
   symbol: Not Applicable
@@ -188,7 +188,7 @@ ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engin
 
 Size of Opportunities: Up to $50K
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, OPRHAD, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, shape = industry_simple, color=stage_simple )) +
   geom_point() +
   scale_y_continuous(limits = c(0,50000))
@@ -198,7 +198,7 @@ ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engin
 
 Size of Opportunities: $50K to $100K
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, MALACHY, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, shape = industry_simple, color=stage_simple )) +
   geom_point() +
   scale_y_continuous(limits = c(50000,100000))
@@ -207,7 +207,7 @@ ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engin
 
 Size of Opportunities: $100K to $500K
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, KENDRA, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, shape = industry_simple, color=stage_simple )) +
   geom_point() +
   scale_y_continuous(limits = c(100000,500000))
@@ -216,7 +216,7 @@ ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engin
 
 Size of Opportunities: $500K to $1M
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, JENNIFER, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, shape = industry_simple, color=stage_simple )) +
   geom_point() +
   scale_y_continuous(limits = c(500000,1000000))
@@ -225,7 +225,7 @@ ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engin
 
 Size of Opportunities: $1M above
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, HAROLD, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, shape = industry_simple, color=stage_simple )) +
   geom_point() +
   scale_y_continuous(limits = c(1000000,50000000))
@@ -236,11 +236,12 @@ WON Opportunities: Up to $50K
 Try to smooth and see if pattern emerges
 Take out the colors and shaping, and try to get into a smooth line
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, GEORGE, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+
 ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd)) +
   geom_point() +
-  scale_y_continuous(limits = c(0,50000)) +
-  geom_smooth()
+  scale_y_continuous(limits = c(0,50000)) #+
+#  geom_smooth()
 ```
 
 WON Opportunities: Up to $1M
@@ -249,7 +250,7 @@ An interesting pattern emerges:
 1. Utilities dollar amounts continuously increase over time
 2. Distribution and Engineering dollar amounts have gone down
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, ERNIE, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution","Everything Else")), aes(x = close_date, y = forecasted_amount_usd, color=industry_simple)) +
   scale_y_continuous(limits = c(0,1000000)) +
   geom_smooth()
@@ -259,7 +260,7 @@ HELP!!!
 How can get the lines to display WON, LOSS, WIP, as opposed to industry?
 When we change the following to stage_simple, no lines appear
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, DEAN, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution","Everything Else")), aes(x = close_date, y = forecasted_amount_usd)) +
   geom_point(alpha=0.2) +
   scale_y_continuous(limits = c(100000,500000)) +
@@ -269,7 +270,7 @@ ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engin
 
 Try another track: Use facet_grid to compare across Stages
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, CHRIS, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution","Everything Else")), aes(x = close_date, y = forecasted_amount_usd)) +
   geom_point(alpha=0.2) +
   scale_y_continuous(limits = c(100000,500000)) +
@@ -280,7 +281,7 @@ ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engin
 
 BETTER! Now use facet_grid to compare across Industry
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, BOB, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution","Everything Else")), aes(x = close_date, y = forecasted_amount_usd, col=stage_simple)) +
   geom_point(alpha=0.2) +
   scale_y_continuous(limits = c(100000,500000)) +
@@ -291,11 +292,79 @@ ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engin
 
 BETTER! Move Industry to color, and Stage to the facet
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, FRANK, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, col=industry_simple)) +
   geom_point(alpha=0.2) +
   scale_y_continuous(limits = c(100000,500000)) +
   geom_jitter() +
   facet_grid(. ~ stage_simple)
   
+```
+
+Grouping and Summarizing Part 1
+
+In order to group and summarize the datset more effectively with tidyr, we need to convert some of the data (such as Close Date) into Discrete data variables (such as Month and Year).
+
+```{r, GROUPING1, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+# Use lubridate for the year and month functions
+#library(lubridate)
+
+opps_revised2 <- opps_revised %>% 
+  mutate(close_year=year(close_date), close_month=month(close_date))
+
+```
+
+Grouping and Summarizing Part 2
+
+Now that we have date variables that can be grouped, we'll group some sets of data, and plot them.
+
+```{r, GROUPING2, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+
+# Filter on WON opportunities, Group by INDUSTRY
+opps_revised2 %>% 
+  filter(stage_simple=="WON") %>%
+  group_by(industry) %>%
+  summarize (sumWon=sum(expected_revenue_usd), 
+             meanWon=mean(expected_revenue_usd), 
+             medianWon=median(expected_revenue_usd),
+             maxWon=max(expected_revenue_usd),
+             minWon=min(expected_revenue_usd))
+
+# Filter on WON opportunities, Group by INDUSTRY
+opps_revised2 %>% 
+  filter(stage_simple=="WON") %>%
+  group_by(industry_simple) %>%
+  summarize (sumWon=sum(expected_revenue_usd), 
+             meanWon=mean(expected_revenue_usd), 
+             medianWon=median(expected_revenue_usd),
+             maxWon=max(expected_revenue_usd),
+             minWon=min(expected_revenue_usd))
+
+# Now create a nice little boxplot
+opps_revised2 %>% 
+  filter(stage_simple=="WON") %>%
+  group_by(industry_simple) %>%
+  summarize (sumWon=sum(expected_revenue_usd), 
+             meanWon=mean(expected_revenue_usd), 
+             medianWon=median(expected_revenue_usd),
+             maxWon=max(expected_revenue_usd),
+             minWon=min(expected_revenue_usd)) 
+```
+
+The following chart appears to show the following for each Industry:
+- black line is the MEDIAN
+- top is 75th percentile
+- bottom is 25th percentile
+- the "whiskers" represent the additional range of values
+- the dots represent the outliers
+
+The graph seems to show that the Energy industry ranges are in alignment with the median and distributions for other industries.
+
+```{r, GROUP1EXERCISE, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+
+ggplot(opps_revised2, aes(x = industry_simple, y = expected_revenue_usd)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  ggtitle("Expected Revenue By Industry")
+
 ```
