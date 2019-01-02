@@ -178,16 +178,6 @@ sets of data, and plot them.
     ## 5 Utilities        159260898. 133833.    14845.  33687033.  -420000 
     ## 6 <NA>             223138202.  39285.     2492    4085822. -1141460.
 
-    ## # A tibble: 6 x 6
-    ##   industry_simple      sumWon meanWon medianWon     maxWon    minWon
-    ##   <chr>                 <dbl>   <dbl>     <dbl>      <dbl>     <dbl>
-    ## 1 Distribution      75232661.  78695.     6864.   4706310    -17126.
-    ## 2 Energy           141387504. 111241.    18688.   4000188.  -367000 
-    ## 3 Engineering       59169236.  50702.     3886.  11800000     -1895 
-    ## 4 Everything Else 2802057077.  64063.     3832. 521876775  -3214097 
-    ## 5 Utilities        159260898. 133833.    14845.  33687033.  -420000 
-    ## 6 <NA>             223138202.  39285.     2492    4085822. -1141460.
-
 The following chart appears to show the following for each Industry: -
 black line is the MEDIAN - top is 75th percentile - bottom is 25th
 percentile - the “whiskers” represent the additional range of values -
@@ -196,4 +186,13 @@ the dots represent the outliers
 The graph seems to show that the Energy industry ranges are in alignment
 with the median and distributions for other industries.
 
-![](OppAnalysis_DataStory_files/figure-markdown_strict/GROUP1EXERCISE-1.png)
+![](OppAnalysis_DataStory_files/figure-markdown_strict/BOXPLOT-1.png)
+
+Now let’s try grouping by Years and Months
+
+![](OppAnalysis_DataStory_files/figure-markdown_strict/GROUPYEARMONTH-1.png)
+
+Still too crowded, unless we get a larger screen or layout. Let’s try
+adding a new column for Year + Fiscal Quarter.
+
+![](OppAnalysis_DataStory_files/figure-markdown_strict/GROUPQUARTER-1.png)![](OppAnalysis_DataStory_files/figure-markdown_strict/GROUPQUARTER-2.png)![](OppAnalysis_DataStory_files/figure-markdown_strict/GROUPQUARTER-3.png)![](OppAnalysis_DataStory_files/figure-markdown_strict/GROUPQUARTER-4.png)

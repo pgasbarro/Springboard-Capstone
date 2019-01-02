@@ -310,7 +310,7 @@ In order to group and summarize the datset more effectively with tidyr, we need 
 #library(lubridate)
 
 opps_revised2 <- opps_revised %>% 
-  mutate(close_year=year(close_date), close_month=month(close_date))
+  mutate(close_year=year(close_date), close_month=month(close_date), combo_date=paste(close_year, close_month, sep="_"))
 
 ```
 
@@ -340,15 +340,6 @@ opps_revised2 %>%
              maxWon=max(expected_revenue_usd),
              minWon=min(expected_revenue_usd))
 
-# Now create a nice little boxplot
-opps_revised2 %>% 
-  filter(stage_simple=="WON") %>%
-  group_by(industry_simple) %>%
-  summarize (sumWon=sum(expected_revenue_usd), 
-             meanWon=mean(expected_revenue_usd), 
-             medianWon=median(expected_revenue_usd),
-             maxWon=max(expected_revenue_usd),
-             minWon=min(expected_revenue_usd)) 
 ```
 
 The following chart appears to show the following for each Industry:
@@ -360,11 +351,67 @@ The following chart appears to show the following for each Industry:
 
 The graph seems to show that the Energy industry ranges are in alignment with the median and distributions for other industries.
 
-```{r, GROUP1EXERCISE, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, BOXPLOT, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 
 ggplot(opps_revised2, aes(x = industry_simple, y = expected_revenue_usd)) +
   geom_boxplot() +
   scale_y_log10() +
   ggtitle("Expected Revenue By Industry")
 
+```
+
+Now let's try grouping by Years and Months
+
+```{r, GROUPYEARMONTH, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+
+opps_combo_date <- opps_revised2 %>% 
+  filter(stage_simple=="WON") %>%
+  group_by(combo_date, industry_simple) %>%
+  summarize (sumWon=sum(expected_revenue_usd), 
+             meanWon=mean(expected_revenue_usd), 
+             medianWon=median(expected_revenue_usd),
+             maxWon=max(expected_revenue_usd),
+             minWon=min(expected_revenue_usd))
+
+  ggplot(opps_combo_date, aes(x = combo_date, y = sumWon, color=industry_simple)) +
+  geom_point() +
+  expand_limits(y = 0)
+
+```
+
+Still too crowded, unless we get a larger screen or layout. Let's try adding a new column for Year + Fiscal Quarter.
+
+```{r, GROUPQUARTER, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+opps_revised2 <- opps_revised %>% 
+  mutate(close_year=year(close_date), close_month=month(close_date), combo_date=paste(close_year, close_month, sep="_"), combo_qtr=paste(close_year, fiscal_quarter, sep="_"))
+
+opps_combo_qtr <- opps_revised2 %>% 
+  filter(stage_simple=="WON") %>%
+  group_by(combo_qtr, industry_simple) %>%
+  summarize (sumWon=sum(expected_revenue_usd), 
+             meanWon=mean(expected_revenue_usd), 
+             medianWon=median(expected_revenue_usd),
+             maxWon=max(expected_revenue_usd),
+             minWon=min(expected_revenue_usd))
+
+ggplot(opps_combo_qtr, aes(x = combo_qtr, y = sumWon, color=industry_simple)) +
+  geom_point() +
+  expand_limits(y = 0) +
+  ggtitle("Sum Amounts of WON by Fiscal Quarter 2016-2018")
+
+ggplot(opps_combo_qtr, aes(x = combo_qtr, y = sumWon, color=industry_simple)) +
+  geom_line() +
+  expand_limits(y = 0) +
+  ggtitle("Sum Amounts of WON by Fiscal Quarter 2016-2018")
+  
+ggplot(opps_combo_qtr, aes(x = combo_qtr, y = meanWon, color=industry_simple)) +
+  geom_line() +
+  expand_limits(y = 0) +
+  ggtitle("Mean Amounts of WON by Fiscal Quarter 2016-2018")
+
+ggplot(opps_combo_qtr, aes(x = combo_qtr, y = medianWon, color=industry_simple)) +
+  geom_line() +
+  expand_limits(y = 0) +
+  ggtitle("Median Amounts of WON by Fiscal Quarter 2016-2018")
+  
 ```
