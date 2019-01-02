@@ -1,12 +1,12 @@
 ---
 title: "Gasbarro Capstone Project: Opportunities Analysis - Statistics - Section 5"
 output:
-  md_document: default
+  pdf_document: default
   ioslides_presentation: default
   html_document: default
   slidy_presentation: default
   word_document: default
-  pdf_document: default
+  md_document: default
 date: "November 14, 2018"
 params:
   symbol: Not Applicable
