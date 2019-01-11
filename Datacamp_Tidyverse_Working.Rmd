@@ -1,0 +1,188 @@
+---
+title: "Datacamp Project: Working with Data in the Tidyverse"
+output:
+  md_document: default
+  ioslides_presentation: default
+  pdf_document: default
+  slidy_presentation: default
+  word_document: default
+  html_document: default
+date: "Januiary 3, 2019"
+params:
+  symbol: Not Applicable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r GAPMINDER echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+
+library(gapminder)
+library(dplyr)
+gapminder
+
+gapminder %>%
+  filter(year == 2007, country == "United States")
+
+gapminder %>%
+  filter(year==2007) %>% 
+  arrange(desc(gdpPercap))
+
+```
+
+```{r, MODULE01, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+#library(readr)
+#library(skimr)
+
+# Create bakeoff from "bakeoff.csv"
+bakeoff <- read_csv("bakeoff.csv")
+
+# Filter rows where showstopper is UNKNOWN 
+bakeoff %>% 
+    filter(showstopper == "UNKNOWN")
+
+# Edit to add list of missing values
+bakeoff <- read_csv("bakeoff.csv", na = c("", "NA", "UNKNOWN"))
+
+
+# Filter rows where showstopper is NA 
+bakeoff %>% filter(is.na(showstopper))
+
+skim(bakeoff)
+
+bakers_mini <- read_csv("baker_results.csv")
+
+bakers_mini %>% 
+  arrange(first_date_us) %>% 
+  glimpse() 
+
+# Edit to filter, group by, and skim
+bakeoff %>% 
+  filter(!is.na(us_season)) %>% 
+  group_by(us_season)  %>% 
+  skim()
+
+glimpse(bakers_mini)
+
+bakers_mini %>% 
+  count(series) %>% 
+  mutate(prop_bakers = n/sum(n))
+
+bakeoff %>% 
+  count(result=="SB")
+
+ggplot(bakeoff, aes(x=episode)) + 
+    geom_bar() + 
+    facet_wrap(~series)
+
+#read_csv(file, col_names = TRUE, col_types = NULL,
+#  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+#  quote = "\"", comment = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+#  guess_max = min(1000, n_max), progress = show_progress())
+
+bakers <- read_csv("messy_baker_results.csv",
+                   col_types = cols(
+                     last_date_uk = col_date(format = "%d %B %Y")
+                   ))
+
+# Edit code to fix the parsing error 
+desserts <- read_csv("desserts.csv",
+                      col_types = cols(
+                        technical = col_number()),
+                        na = c("", "NA", "N/A") 
+                     )
+
+# View parsing problems
+problems(desserts)
+
+# Find format to parse uk_airdate 
+parse_date("17 August 2010", format = "%d %B %Y")
+
+# Edit to cast uk_airdate
+desserts <- read_csv("desserts.csv", 
+                     na = c("", "NA", "N/A"),
+                     col_types = cols(
+                       technical = col_number(),
+                       uk_airdate = col_date(format = "%d %B %Y")
+                     ))
+
+# Print by descending uk_airdate
+arrange(desserts, desc(uk_airdate))
+
+# Cast result a factor
+desserts <- read_csv("desserts.csv", 
+                     na = c("", "NA", "N/A"),
+                     col_types = cols(
+                       technical = col_number(),
+                       uk_airdate = col_date(format = "%d %B %Y"),
+                       result = col_factor(levels = NULL)
+                     ))
+                    
+# Glimpse to view
+glimpse(desserts)
+
+# Count rows grouping by nut variable
+desserts %>% 
+    count(signature_nut, sort = TRUE)
+    
+# Edit code to recode "no nut" as missing
+desserts_2 <- desserts %>% 
+  mutate(nut = recode(signature_nut, "filbert" = "hazelnut", 
+                           "no nut" = NA_character_))
+
+# Count rows again 
+desserts_2 %>% 
+    count(nut, sort = TRUE)
+
+# Edit to recode tech_win as factor
+desserts <- desserts %>% 
+  mutate(tech_win = recode_factor(technical, `1` = 1,
+                           .default = 0))
+
+# Count to compare values                      
+desserts %>% 
+  count(technical == 1, tech_win)
+
+bakeoff %>% 
+  select(-technical)
+
+ratings <- read_csv("02.03_messy_ratings.csv")
+messy_ratings <- read_csv("02.03_messy_ratings.csv")
+
+
+# Recode channel as factor: bbc (1) or not (0)
+ratings <- ratings %>% 
+  mutate(bbc = recode_factor(channel, 
+                             "Channel 4" = 0,
+                             .default = 1))
+                            
+# Select to look at variables to plot next
+ratings %>% 
+  select(series, channel, bbc, avg_uk_viewers)
+  
+# Make a filled bar chart
+ggplot(ratings, aes(x = series, y = avg_uk_viewers, fill = bbc)) +
+  geom_col()
+
+ratings %>% 
+  select(channel, everything(), -ends_with("day"))
+
+# Glimpse to see variable names
+glimpse(messy_ratings)
+
+# Load janitor
+library(janitor)
+
+# Reformat to snake case
+ratings <- messy_ratings %>%  
+  clean_names("snake")
+
+# Glimpse cleaned names
+glimpse(ratings)
+
+
+```
+

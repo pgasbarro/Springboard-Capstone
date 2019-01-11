@@ -416,3 +416,10 @@ ggplot(opps_combo_qtr, aes(x = combo_qtr, y = medianWon, color=industry_simple))
   ggtitle("Median Amounts of WON by Fiscal Quarter 2016-2018")
   
 ```
+
+```{r, COUNTS, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+
+
+
+
+```

@@ -1,0 +1,76 @@
+---
+title: "ShinyTest"
+output: html_document
+runtime: shiny
+date: "January 5, 2019"
+params:
+  symbol: Not Applicable
+---
+
+
+```{r, echo=FALSE}
+
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(readxl)
+library(stringr)
+library(lubridate)
+library(ggplot2)
+library(xts)
+library(scales)
+library(shiny)
+
+opps_revised <- readRDS("opps_revised.rds")
+
+opps_revised <- opps_revised %>%
+  mutate(
+    industry_simple = case_when(
+      industry == "Aerospace & Defense" ~ "Everything Else",
+      industry == "Automotive" ~ "Everything Else",
+      industry == "Computer Hardware" ~ "Everything Else",
+      industry == "Computer Software" ~ "Everything Else",
+      industry == "Consumer Packaged Goods" ~ "Everything Else",
+      industry == "Distribution & Transportation" ~ "Distribution",
+      industry == "Education" ~ "Everything Else",
+      industry == "Energy" ~ "Energy",
+      industry == "Engineering & Construction" ~ "Engineering",
+      industry == "Federal Public Sector" ~ "Everything Else",
+      industry == "Financial Services" ~ "Everything Else",
+      industry == "Healthcare" ~ "Everything Else",
+      industry == "Hospitals / Health Care" ~ "Everything Else",
+      industry == "Insurance" ~ "Everything Else",
+      industry == "Legal" ~ "Everything Else",
+      industry == "Manufacturing" ~ "Everything Else",
+      industry == "Media & Entertainment" ~ "Everything Else",
+      industry == "Other" ~ "Everything Else",
+      industry == "Pharmaceutical" ~ "Everything Else",
+      industry == "Professional Services" ~ "Everything Else",
+      industry == "Public Administration" ~ "Everything Else",
+      industry == "Public Sector" ~ "Everything Else",
+      industry == "Retail" ~ "Everything Else",
+      industry == "Telecommunications" ~ "Everything Else",
+      industry == "Transportation & Public Utilities" ~ "Transportation",
+      industry == "Travel" ~ "Everything Else",
+      industry == "Utilities" ~ "Utilities",
+      industry == "" ~ "Missing"
+    )
+  )
+
+saveRDS(opps_revised,file="opps_revised.rds")
+
+```
+
+```{r, echo=FALSE}
+
+inputPanel(
+  selectInput("industry_simple", label = "Industry:",
+              choices = c("Energy" , "Utilities","Engineering","Distribution"),
+              selected = "Energy")
+)
+
+renderPlot({
+ggplot(opps_revised, aes(x = input$industry_simple, fill=stage_simple)) + 
+  geom_bar()
+})
+```
