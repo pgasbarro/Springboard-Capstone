@@ -3,8 +3,7 @@ title: "ShinyTest"
 output: html_document
 runtime: shiny
 date: "January 5, 2019"
-params:
-  symbol: Not Applicable
+
 ---
 
 
