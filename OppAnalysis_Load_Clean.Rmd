@@ -1,13 +1,10 @@
 ---
-title: "Opportunity Analysis: Load and Clean"
+title: "Opportunity Analysis: Load and Clean for 2016-2018"
 output:
   html_document: default
-  ioslides_presentation: default
   md_document: default
-  slidy_presentation: default
-  word_document: default
   pdf_document: default
-date: "January 1, 2018"
+date: "January 19, 2019"
 params:
   symbol: Not Applicable
 ---
@@ -32,10 +29,10 @@ library(scales)
 
 
 # Create a list of columns - this will be the column names
-columns <- c("account_name","opportunity_name","opportunity_type","lead_source","forecasted_amount_currency","forecasted_amount","expected_revenue_currency","expected_revenue","close_date","next_step","stage","fiscal_period","age","created_date","opportunity_owner","owner_role","industry","sic_code","description")
+columns <- c("account_name","opportunity_name","opportunity_type","lead_source","forecasted_amount_currency","forecasted_amount","expected_revenue_currency","expected_revenue","close_date","next_step","stage","fiscal_period","age","created_date","opportunity_owner","owner_role","industry","sic_code","description","billing_city","billing_state","billing_country")
 
-# Import the the first Excel sheet of Opportunities_2016_2018.xlsx with column names set to TRUE
-opps_orig <- read_excel("Opportunities_2016_2018.xlsx", sheet=1, col_names=columns, skip=1)
+# Import the the first Excel sheet of opportunities_2018.xlsx with column names set to TRUE
+opps_orig <- read_excel("opportunities_2018.xlsx", sheet=1, col_names=columns, skip=1)
 
 ## Here is a summary of the data we just loaded
 summary(opps_orig)

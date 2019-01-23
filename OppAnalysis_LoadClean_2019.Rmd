@@ -1,0 +1,206 @@
+---
+title: "Opportunity Analysis: Load and Clean for 2016-2018"
+output:
+  html_document: default
+  md_document: default
+  pdf_document: default
+date: "January 19, 2019"
+params:
+  symbol: Not Applicable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+## IMPORTING THE SPREADSHEET
+
+install.packages("readxl")
+#install.packages("broom")
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(stringr)
+library(lubridate)
+library(ggplot2)
+library(xts)
+library(scales)
+
+
+# Create a list of columns - this will be the column names
+columns <- c("account_name","opportunity_name","opportunity_type","lead_source","forecasted_amount_currency","forecasted_amount","expected_revenue_currency","expected_revenue","close_date","next_step","stage","fiscal_period","age","created_date","opportunity_owner","owner_role","industry","sic_code","description","billing_city","billing_state","billing_country")
+
+# Import the the first Excel sheet of opportunities_2018.xlsx with column names set to TRUE
+opps_orig <- read_excel("opportunities_2018.xlsx", sheet=1, col_names=columns, skip=1)
+
+## Here is a summary of the data we just loaded
+summary(opps_orig)
+
+## Here are the first 10 lines
+head(opps_orig)
+
+## Here are the number of rows and columns
+dim(opps_orig)
+
+## How many rows are in this tibble/table?
+nrow(opps_orig)
+
+# Names of the columns
+names(opps_orig)
+
+# Use dplyr glimpse
+#glimpse(opps_orig)
+
+# DATA CLEANSING AND PREPARATION
+
+opps_orig$forecasted_amount <- as.double(opps_orig$forecasted_amount)
+opps_orig$expected_revenue <- as.double(opps_orig$expected_revenue)
+
+# Fill in the missing amount and revenue with 0
+opps_orig$forecasted_amount[which(is.na(opps_orig$forecasted_amount))] <- 0
+opps_orig$expected_revenue[which(is.na(opps_orig$expected_revenue))] <- 0
+which(is.na(opps_orig$expected_revenue))
+
+# Clean up Stage - normalize names without letters
+opps_orig <- opps_orig %>%
+  mutate(
+    stage = case_when(
+      stage == "G. Booked" ~ "Booked",
+      stage == "G. Booked" ~ "Booked",
+      stage == "5. Propose Solution" ~ "Propose Solution",
+      stage == "C. Establish Needs" ~ "Establish Needs",
+      stage == "3. Establish Needs" ~ "Establish Needs",
+      stage == "D. Develop Solution" ~ "Develop Solution",
+      stage == "2. Gain Access" ~ "Gain Access",
+      stage == "1. Identify Prospect" ~ "Identify Prospect",
+      stage == "4. Develop Solution" ~ "Develop Solution",
+      stage == "B. Gain Access" ~ "Gain Access",
+      stage == "7. Purchase Order In" ~ "Purchase Order In",
+      stage == "6. Secure Agreement" ~ "Secure Agreement",
+      stage == "E. Propose Solution" ~ "Propose Solution",
+      stage == "A. Identify Process" ~ "Identify Process",
+      stage == "H. Won and Closed" ~ "Won and Closed",
+      stage == "F. Secure Agreement" ~ "Secure Agreement",
+      stage == "Dropped" ~ "Dropped",
+      stage == "Won and Closed" ~ "Won and Closed",
+      stage == "Lost" ~ "Lost",
+      stage == "Order Ready for Finance Review" ~ "Order Ready for Finance Review",
+      stage == "Ready for Shared Services Review" ~ "Ready for Shared Services Review",
+      stage == "Duplicate" ~ "Duplicate",
+      stage == "Order Ready for Finance Review ? Omitted" ~ "Order Ready for Finance Review",
+      stage == "Project Delayed" ~ "Project Delayed"
+    )
+  )
+
+# Simplify Stage in a new variable - stage_simple
+opps_orig <- opps_orig %>%
+  mutate(
+    stage_simple = case_when(
+      stage == "Booked" ~ "WON", 
+      stage == "Propose Solution" ~ "WIP",
+      stage == "Establish Needs" ~ "WIP",
+      stage == "Develop Solution" ~ "WIP",
+      stage == "Gain Access" ~ "WIP",
+      stage == "Identify Prospect" ~ "WIP",
+      stage == "Purchase Order In" ~ "WON",
+      stage == "Secure Agreement" ~ "WIP",
+      stage == "Identify Process" ~ "WIP",
+      stage == "Won and Closed" ~ "WON",
+      stage == "Secure Agreement" ~ "WON",
+      stage == "Dropped" ~ "LOST",
+      stage == "Won and Closed" ~ "WON",
+      stage == "Lost" ~ "LOST",
+      stage == "Order Ready for Finance Review" ~ "WIP",
+      stage == "Ready for Shared Services Review" ~ "WIP",
+      stage == "Duplicate" ~ "Duplicate",
+      stage == "Order Ready for Finance Review ? Omitted" ~ "WIP",
+      stage == "Project Delayed" ~ "LOST"
+    )
+  )
+
+
+
+# Split fiscal period into 2 new columns: fiscal_quarter and fiscal_year
+opps_orig <- separate(opps_orig, "fiscal_period", c("fiscal_quarter","fiscal_year"), sep="-")
+
+# WHY DO I NEED TO DO THIS?
+df <- fortify(opps_orig)
+head(df)
+
+# Use getFX("INR/USD",from=format(Sys.Date()-1, "%Y-%m-%d")) to get the exchange rate
+# Do a case_when for each different currency
+# Do I have to make a new function?
+
+# Import the currency_rates table
+# Create a list of columns - this will be the column names
+currency_columns <- c("currency_symbol","currency_rate")
+# Import the the first Excel sheet of Opportunities_2016_2018.xlsx with column names set to TRUE
+currency_rates <- read_excel("currency_rates.xlsx", sheet=1, col_names=currency_columns, skip=0)
+
+# Try creating a new column currency_symbol and assign forecasted_amount_currency
+opps_orig <- opps_orig %>%
+  mutate(currency_symbol = forecasted_amount_currency)
+
+# Now do a join on the tables opps_orig and currency_rates by currency_symbol
+opps_revised <- left_join(opps_orig, currency_rates, by="currency_symbol")
+  
+# Convert forecasted_amount into forecasted_amount_usd 
+opps_revised <- opps_revised %>%
+  mutate(forecasted_amount_usd = forecasted_amount * currency_rate)
+
+# Convert expected_revenue into expected_revenue_usd
+opps_revised <- opps_revised %>%
+  mutate(expected_revenue_usd = expected_revenue * currency_rate)
+
+# Import SIC Codes (spreadsheet or CSV)
+# Create a list of columns - this will be the column names
+sic_columns <- c("division","major_group","industry_group","sic_code","description")
+
+# Import the the first Excel sheet of Opportunities_2016_2018.xlsx with column names set to TRUE
+sic_codes <- read_excel("sic_codes.xlsx", sheet=1, col_names=sic_columns, skip=1)
+
+## Here is a summary of the data we just loaded
+summary(sic_codes)
+
+# Can we fill in any empty variables?
+# opps_noempties <- na.omit("opps_orig")
+
+# Simplify Industry in a new variable - industry_simple
+opps_revised <- opps_revised %>%
+  mutate(
+    industry_simple = case_when(
+      industry == "Aerospace & Defense" ~ "Everything Else",
+      industry == "Automotive" ~ "Everything Else",
+      industry == "Computer Hardware" ~ "Everything Else",
+      industry == "Computer Software" ~ "Everything Else",
+      industry == "Consumer Packaged Goods" ~ "Everything Else",
+      industry == "Distribution & Transportation" ~ "Distribution",
+      industry == "Education" ~ "Everything Else",
+      industry == "Energy" ~ "Everything Else",
+      industry == "Engineering & Construction" ~ "Engineering",
+      industry == "Federal Public Sector" ~ "Everything Else",
+      industry == "Financial Services" ~ "Everything Else",
+      industry == "Healthcare" ~ "Everything Else",
+      industry == "Hospitals / Health Care" ~ "Everything Else",
+      industry == "Insurance" ~ "Everything Else",
+      industry == "Legal" ~ "Everything Else",
+      industry == "Manufacturing" ~ "Everything Else",
+      industry == "Media & Entertainment" ~ "Everything Else",
+      industry == "Other" ~ "Everything Else",
+      industry == "Pharmaceutical" ~ "Everything Else",
+      industry == "Professional Services" ~ "Everything Else",
+      industry == "Public Administration" ~ "Everything Else",
+      industry == "Public Sector" ~ "Everything Else",
+      industry == "Retail" ~ "Everything Else",
+      industry == "Telecommunications" ~ "Everything Else",
+      industry == "Transportation & Public Utilities" ~ "Transportation",
+      industry == "Travel" ~ "Everything Else",
+      industry == "Utilities" ~ "Utilities",
+      industry == "" ~ "Missing"
+    )
+  )
+
+saveRDS(opps_revised,file="opps_revised2.rds")
+
+```

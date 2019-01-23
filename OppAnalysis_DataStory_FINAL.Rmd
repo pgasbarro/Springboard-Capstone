@@ -5,14 +5,14 @@ output:
     toc: yes
   html_document:
     toc: yes
-date: "January 18, 2019"
+date: "January 23, 2019"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, FINALCLEANUP, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ## IMPORTING THE SPREADSHEET
 
 library(readxl)
@@ -26,6 +26,7 @@ library(xts)
 library(scales)
 
 opps_revised <- readRDS("opps_revised.rds")
+opps_revised_2019 <- readRDS("opps_revised_2019.rds")
 
 opps_revised <- opps_revised %>%
   mutate(
@@ -61,24 +62,73 @@ opps_revised <- opps_revised %>%
     )
   )
 
-opps_revised2 <- opps_revised %>% 
+opps_revised <- opps_revised %>% 
+  mutate(close_year=year(close_date), close_month=month(close_date), combo_date=paste(close_year, close_month, sep="_"))
+
+opps_revised_2019 <- opps_revised_2019 %>%
+  mutate(
+    industry_simple = case_when(
+      industry == "Aerospace & Defense" ~ "Everything Else",
+      industry == "Automotive" ~ "Everything Else",
+      industry == "Computer Hardware" ~ "Everything Else",
+      industry == "Computer Software" ~ "Everything Else",
+      industry == "Consumer Packaged Goods" ~ "Everything Else",
+      industry == "Distribution & Transportation" ~ "Engineering",
+      industry == "Education" ~ "Everything Else",
+      industry == "Energy" ~ "Energy",
+      industry == "Engineering & Construction" ~ "Engineering",
+      industry == "Federal Public Sector" ~ "Public Sector",
+      industry == "Financial Services" ~ "Financial",
+      industry == "Healthcare" ~ "Healthcare",
+      industry == "Hospitals / Health Care" ~ "Everything Else",
+      industry == "Insurance" ~ "Insurance",
+      industry == "Legal" ~ "Everything Else",
+      industry == "Manufacturing" ~ "Everything Else",
+      industry == "Media & Entertainment" ~ "Everything Else",
+      industry == "Other" ~ "Everything Else",
+      industry == "Pharmaceutical" ~ "Everything Else",
+      industry == "Professional Services" ~ "Everything Else",
+      industry == "Public Administration" ~ "Everything Else",
+      industry == "Public Sector" ~ "Public Sector",
+      industry == "Retail" ~ "Everything Else",
+      industry == "Telecommunications" ~ "Everything Else",
+      industry == "Transportation & Public Utilities" ~ "Engineering",
+      industry == "Travel" ~ "Everything Else",
+      industry == "Utilities" ~ "Energy",
+      industry == "" ~ "Missing"
+    )
+  )
+
+opps_revised_2019 <- opps_revised_2019 %>% 
   mutate(close_year=year(close_date), close_month=month(close_date), combo_date=paste(close_year, close_month, sep="_"))
 
 
 
 ```
 
+\newpage
 # Introduction
+[Back to Contents](#toc)
+
 A years ago, our company created an entire working group devoted to developing a professional expertise and sophisticated software products for customers in the Energy & Engineering sector. The decision to form this group was based on the fact that a significant number of our customers were in these business sectors, and were trying to use our software to accomplish industry-specific goals and practices.
 
-The big question we want to know is: How are we doing? The following sections and charts answer the targeted questions that feed the big question, and should give us a good picture of how are Energy & Engineering business development is doing.
+The big question we want to know is: How are we doing? This big question can be broken down into smaller targeted questions.
+
+* How many Energy and Engineering customers have we WON, as opposed to LOST?
+* Are there more WON opportunities, year after year, as opposed to LOST?
+* Are we winning more Energy and Engineering opportunities over time? And how do E&E sectors compare with wins for customers in other leading sectors (like Financial)?
+* Are we winning more money in each deal closed for Energy and Engineering accounts over time?
+Is the amount of money Energy and Engineering group seem to be making (based on won deals) in alignment with other business sectors groups?
+
+The following sections and charts should answer these questions, and should give us a good picture of how are Energy & Engineering business development is doing.
 
 \newpage
-# Basic Information
+# Summary: Won vs. Lost
+[Back to Contents](#toc)
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, SUMMARIZE_WON, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 
-opps_industry_all <- opps_revised2 %>% 
+opps_industry_all <- opps_revised_2019 %>% 
   filter(stage_simple=="WON") %>%
   group_by(industry_simple) %>%
   summarize (countWon=n(),
@@ -89,33 +139,126 @@ opps_industry_all <- opps_revised2 %>%
              minWon=min(expected_revenue_usd))
 
 ```
+*How many Energy and Engineering customers have we WON, as opposed to LOST?*
 
 The following table shows a summary of the deals WON, grouped by each industry.
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, SHOW_SUMMARIZE_WON, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 opps_industry_all
 ```
 
-If rendered into a pie chart, it shows that the Energy and Engineering industries, when grouped together, have a significant amount of deals, compared with other business sectors (like Financial, Insurance, and Healthcare)
+The first bar chart, based on the summary table, shows the number of WON deals for the Energy and Engineering sectors, treated separately, for 2016, 2017, and 2018.
 
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
-pie(opps_industry_all$countWon, labels = opps_industry_all$industry_simple, radius = 1.0)
+The second chart shows that the Energy and Engineering industries, when grouped together, have a significant amount of deals, compared with other business sectors (like Financial, Insurance, and Healthcare)
+
+Across all industries, there is a dip in # of opportunities from 2017 to 2018, but it statistically small, and reflects a significant business event that occurred in 2017. (See Conclusion.)
+
+
+```{r, WON_INDUSTRY_BYYEAR, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+#pie(opps_industry_all$countWon, labels = opps_industry_all$industry_simple, radius = #1.0)
+ggplot(subset(opps_revised_2019,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = fiscal_year, fill=industry_simple)) + 
+  geom_bar() +
+  ggtitle("Count of Energy & Engineering WINS 2016-2018")
+ggplot(opps_revised_2019, aes(x = fiscal_year, fill=industry_simple)) + 
+  geom_bar() +
+  ggtitle("Count of Leading Sector WINS 2016-2018")
+
 ```
 
 \newpage
-# Industry By Year
-```{r, BARINDUSTRYYEAR, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
-ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = fiscal_year, fill=industry_simple)) + 
-  geom_bar()
+# WON vs. LOST by YEAR
+[Back to Contents](#toc)
+
+*Are there more WON opportunities, year after year, as opposed to LOST?*
+
+The following chart filters all the opportunities into a subset focused on the Energy and Engineering sectors, and looks at the amounts that were WON vs. LOST.
+
+The proportion of WON vs. LOST opportunities appears to remain the same over the last 3 years, whether the total amount of opportunities rises and falls.
+
+There is a slight dip from 2017 to 2018, but this can be explained by business events that occurred in 2018 (see Conclusion section).
+
+```{r, WON_VS_LOST, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_revised_2019,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = fiscal_year, fill=stage_simple)) + 
+  geom_bar() +
+  ggtitle("Count of WINS vs. LOSSES for Energy & Engineering 2016-2018")
 ```
 
-```{r, YEARBYINDUSTRY, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
-ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = industry_simple, fill=fiscal_year)) + 
-  geom_bar()
+
+\newpage
+# More WON Deals Over Time?
+[Back to Contents](#toc)
+
+*Are we winning more Energy and Engineering opportunities over time? And how do E&E sectors compare with wins for customers in other leading sectors (like Financial)?*
+
+The bar chart in in WON vs. LOST by YEAR shows the number of WON opportunities appears to increased from 2016 to 2017, then decrease into 2017. However, the bar chart doesn't give us a good picture of how this is happening over time (e.g. days or months)
+
+We created two new variables - combo_date and combo_quarter - which represent the Year and Financial Quarter of the Close Date as a numerical value (2016.4) which can be easily mapped onto a GGPLOT chart.
+
+We also excluded "Everything Else" from the chart results, because it skewed the results (since "Everything Else" is a catch-all for every other business sector).
+
+The first chart shows the trend of Number (Count) of deals WON in Energy and Engineering from 2016 to 2018. The second chart shows the same trend, but across the leading industries (like Financal) compared with E&E sectors.
+
+**QUESTION**: *Why does the previous bar chart show a spike from 2016 to 2017, but the current chart shows steady decline from 2016 to 2017?*
+
+```{r, COUNT_YEARMONTH, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+
+opps_revised_2019 <- opps_revised_2019 %>% 
+  mutate(close_year=year(close_date), close_month=month(close_date), combo_date=paste(close_year, close_month, sep="_"), combo_qtr=quarter(close_date, with_year=TRUE))
+
+opps_combo_qtr <- opps_revised_2019 %>% 
+  filter(stage_simple=="WON", industry_simple!="Everything Else") %>%
+  group_by(combo_qtr, industry_simple) %>%
+  summarize (countWon=n(),
+             sumWon=sum(expected_revenue_usd), 
+             meanWon=mean(expected_revenue_usd), 
+             medianWon=median(expected_revenue_usd),
+             maxWon=max(expected_revenue_usd),
+             minWon=min(expected_revenue_usd)) %>%
+  ungroup()
+
+ggplot(subset(opps_combo_qtr,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = combo_qtr, y = countWon, color=industry_simple)) +
+  geom_point() +
+  expand_limits(y = 0) +
+  geom_smooth(method="lm") +
+  ggtitle("Count of E&E Sectors WON by Fiscal Quarter 2016-2018")
+
+ggplot(opps_combo_qtr, aes(x = combo_qtr, y = countWon, color=industry_simple)) +
+  geom_point() +
+  expand_limits(y = 0) +
+  geom_smooth(method="lm") +
+  ggtitle("Count of Leading Sectors WON by Fiscal Quarter 2016-2018")
+```
+
+\newpage
+# More MONERY per DEAL Over Time?
+[Back to Contents](#toc)
+
+*Are we winning more money in each deal closed for Energy and Engineering accounts over time?*
+
+The first chart shows the SUM amount of money, across all deals, tracked over time by business sector. All industries saw a decline in the total amount of Expected Revenue from 2016 to 2018, though the decline was modest.
+
+The second chart shows the MEAN amount of money per deal, tracked over time by business sector. Again, all sectors saw a decline in the MEAN amount per deal, but the Energy sector saw the most precipitous drop from 2016 to 2018 among all the sectors.
+
+```{r, AMOUNT_YEARMONTH, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(opps_combo_qtr, aes(x = combo_qtr, y = sumWon, color=industry_simple)) +
+  geom_point() +
+  expand_limits(y = 0) +
+  geom_smooth(method="lm") +
+  ggtitle("Sum Amounts of WON by Fiscal Quarter 2016-2018")
+  
+ggplot(opps_combo_qtr, aes(x = combo_qtr, y = meanWon, color=industry_simple)) +
+  geom_point() +
+  expand_limits(y = 0) +
+  geom_smooth(method="lm") +
+  ggtitle("Mean Amounts of WON by Fiscal Quarter 2016-2018")
 
 ```
+
 \newpage
 # Expected Revenue by Industry
+[Back to Contents](#toc)
+
+*Is the amount of money Energy and Engineering group seem to be making (based on won deals) in alignment with other business sectors groups?*
 
 The following chart appears to show the following for each Industry:
 - black line is the MEDIAN
@@ -124,12 +267,12 @@ The following chart appears to show the following for each Industry:
 - the "whiskers" represent the additional range of values
 - the dots represent the outliers
 
-The graph seems to show that the Energy industry ranges are in alignment with the median and distributions for other industries.
+The graph seems to show that the Energy industry ranges are in alignment with the median and distributions for other industries, even if overall counts of WINS and AMOUNTS declined from 2017 to 2018.
 
-```{r, BOXPLOT, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, BOXPLOT_EXPECTED_REVENUE, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 
 # Filter on WON opportunities, Group by INDUSTRY
-opps_revised2 %>% 
+opps_revised_2019 %>% 
   filter(stage_simple=="WON") %>%
   group_by(industry_simple) %>%
   summarize (sumWon=sum(expected_revenue_usd), 
@@ -138,72 +281,29 @@ opps_revised2 %>%
              maxWon=max(expected_revenue_usd),
              minWon=min(expected_revenue_usd))
 
-ggplot(opps_revised2, aes(x = industry_simple, y = expected_revenue_usd)) +
+ggplot(opps_revised_2019, aes(x = industry_simple, y = expected_revenue_usd)) +
   geom_boxplot() +
   scale_y_log10() +
   ggtitle("Expected Revenue By Industry")
+
 ```
 
 \newpage
-# Faceted Display of Industries by Year and Total Amounts
+# Conclusion
+[Back to Contents](#toc)
 
-```{r, FACETDISPLAY, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
-ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution","Everything Else")), aes(x = close_date, y = forecasted_amount_usd, col=stage_simple)) +
-  geom_point(alpha=0.2) +
-  scale_y_continuous(limits = c(100000,500000)) +
-  geom_jitter() +
-  facet_grid(. ~ industry_simple)
+We can draw the following conclusions based on the previous charts.
 
-ggplot(subset(opps_revised,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = close_date, y = forecasted_amount_usd, col=industry_simple)) +
-  geom_point(alpha=0.2) +
-  scale_y_continuous(limits = c(100000,500000)) +
-  geom_jitter() +
-  facet_grid(. ~ stage_simple)
+**1. Acquisition.** Some of the cuase for the the sharp rise and fall between 2016 and 2018 can be attributed to a significant event: the acquisition of another company (with a significant business opportunity pipeline) by our company. The acquired company brought its own opportunities, which greatly increased the overall number in 2017.
 
-```
+* The 2017 number represents 2 companies merging together their opportunities, wins and losses.
+* The 2016 and 2018 numbers represent opportunities for a single company.
 
+Unfortunately, there is variable or data point in the dataset that identifies Company A deals and Company B deals in 2017. With more time (another year or two), it will be possible to better assess the overall direction of Energy and Engineering sales.
 
-\newpage
-# Grouped By Years and Months
+**2. Sector Comparison.** Overall, the Energy and Engineering sectors represent significant proprotions of our business pipeline. While they are not the biggest sector (like Financial customers), they reflect heavily invested customer sector which we should continue to invest business development and product development resources.
 
-```{r, GROUPYEARMONTH, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+**3. Mean Amount.** The decline of the average amounts spent by customers for Energy deals is concerning, but not alarming or unexpected. Over time, many existing customers (and some newer ones) are looking to leverage their existing technologies for lower project costs. Many of our customers have asked about using offshore resources in India and China, allowing them to buy the same amount of product or services for less cost. However, this trend should be monitored: ideally, it should flatten in the coming years, and not decline precipitously.
 
-opps_revised2 <- opps_revised %>% 
-  mutate(close_year=year(close_date), close_month=month(close_date), combo_date=paste(close_year, close_month, sep="_"), combo_qtr=quarter(close_date, with_year=TRUE))
+**4. QUESTION: This is the question from one of the previous sections: If the COUNT of WON deals rose from 2016 to 2017, as reflected in the BAR charts, then why do the LINE charts (tracked over time broken down by quarter) show a steady decline from 2016 to 2017?** I haven't been able to address this question.
 
-opps_combo_qtr <- opps_revised2 %>% 
-  filter(stage_simple=="WON") %>%
-  group_by(combo_qtr, industry_simple) %>%
-  summarize (sumWon=sum(expected_revenue_usd), 
-             meanWon=mean(expected_revenue_usd), 
-             medianWon=median(expected_revenue_usd),
-             maxWon=max(expected_revenue_usd),
-             minWon=min(expected_revenue_usd)) %>%
-  ungroup()
-
-ggplot(opps_combo_qtr, aes(x = combo_qtr, y = sumWon, color=industry_simple)) +
-  geom_point() +
-  expand_limits(y = 0) +
-  ggtitle("Sum Amounts of WON by Fiscal Quarter 2016-2018")
-
-ggplot(opps_combo_qtr, aes(x = combo_qtr, y = sumWon, color=industry_simple)) +
-  geom_line() +
-  expand_limits(y = 0) +
-  ggtitle("Sum Amounts of WON by Fiscal Quarter 2016-2018")
-  
-ggplot(opps_combo_qtr, aes(x = combo_qtr, y = meanWon, color=industry_simple)) +
-  geom_line() +
-  expand_limits(y = 0) +
-  ggtitle("Mean Amounts of WON by Fiscal Quarter 2016-2018")
-
-ggplot(opps_combo_qtr, aes(x = combo_qtr, y = medianWon, color=industry_simple)) +
-  geom_line() +
-  expand_limits(y = 0) +
-  ggtitle("Median Amounts of WON by Fiscal Quarter 2016-2018")
-
-```
-
-
-```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
-
-```
