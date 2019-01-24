@@ -198,7 +198,6 @@ We also excluded "Everything Else" from the chart results, because it skewed the
 
 The first chart shows the trend of Number (Count) of deals WON in Energy and Engineering from 2016 to 2018. The second chart shows the same trend, but across the leading industries (like Financal) compared with E&E sectors.
 
-**QUESTION**: *Why does the previous bar chart show a spike from 2016 to 2017, but the current chart shows steady decline from 2016 to 2017?*
 
 ```{r, COUNT_YEARMONTH, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 
@@ -216,17 +215,20 @@ opps_combo_qtr <- opps_revised_2019 %>%
              minWon=min(expected_revenue_usd)) %>%
   ungroup()
 
+
 ggplot(subset(opps_combo_qtr,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = combo_qtr, y = countWon, color=industry_simple)) +
-  geom_point() +
+  geom_line() +
   expand_limits(y = 0) +
   geom_smooth(method="lm") +
   ggtitle("Count of E&E Sectors WON by Fiscal Quarter 2016-2018")
 
 ggplot(opps_combo_qtr, aes(x = combo_qtr, y = countWon, color=industry_simple)) +
-  geom_point() +
+  geom_line() +
   expand_limits(y = 0) +
   geom_smooth(method="lm") +
   ggtitle("Count of Leading Sectors WON by Fiscal Quarter 2016-2018")
+
+
 ```
 
 \newpage
@@ -235,22 +237,33 @@ ggplot(opps_combo_qtr, aes(x = combo_qtr, y = countWon, color=industry_simple)) 
 
 *Are we winning more money in each deal closed for Energy and Engineering accounts over time?*
 
-The first chart shows the SUM amount of money, across all deals, tracked over time by business sector. All industries saw a decline in the total amount of Expected Revenue from 2016 to 2018, though the decline was modest.
+The first pair of charts shows the SUM amount of money, across all deals, tracked over time by business sector. All industries saw a decline in the total amount of Expected Revenue from 2016 to 2018, though the decline was modest.
 
-The second chart shows the MEAN amount of money per deal, tracked over time by business sector. Again, all sectors saw a decline in the MEAN amount per deal, but the Energy sector saw the most precipitous drop from 2016 to 2018 among all the sectors.
+The second pair of charts shows the MEAN amount of money per deal, tracked over time by business sector. Again, all sectors saw a decline in the MEAN amount per deal, but the Energy sector saw the most precipitous drop from 2016 to 2018 among all the sectors.
 
 ```{r, AMOUNT_YEARMONTH, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_combo_qtr,industry_simple %in% c("Energy" ,"Engineering")), aes(x = combo_qtr, y = sumWon, color=industry_simple)) +
+  geom_line() +
+  expand_limits(y = 0) +
+  geom_smooth(method="lm") +
+  ggtitle("E&E Sectors: Sum Amounts of WON by Fiscal Quarter 2016-2018")
+
 ggplot(opps_combo_qtr, aes(x = combo_qtr, y = sumWon, color=industry_simple)) +
-  geom_point() +
+  geom_line() +
   expand_limits(y = 0) +
   geom_smooth(method="lm") +
-  ggtitle("Sum Amounts of WON by Fiscal Quarter 2016-2018")
+  ggtitle("All Sectors: Sum Amounts of WON by Fiscal Quarter 2016-2018")
   
-ggplot(opps_combo_qtr, aes(x = combo_qtr, y = meanWon, color=industry_simple)) +
-  geom_point() +
+ggplot(subset(opps_combo_qtr,industry_simple %in% c("Energy" ,"Engineering")), aes(x = combo_qtr, y = meanWon, color=industry_simple)) +
+  geom_line() +
   expand_limits(y = 0) +
   geom_smooth(method="lm") +
-  ggtitle("Mean Amounts of WON by Fiscal Quarter 2016-2018")
+  ggtitle("E&E Sectors: Mean Amounts of WON by Fiscal Quarter 2016-2018")
+
+ggplot(opps_combo_qtr, aes(x = combo_qtr, y = meanWon, color=industry_simple)) +
+  geom_line() +
+  expand_limits(y = 0) +
+  ggtitle("All Sectors: Mean Amounts of WON by Fiscal Quarter 2016-2018")
 
 ```
 
@@ -305,5 +318,5 @@ Unfortunately, there is variable or data point in the dataset that identifies Co
 
 **3. Mean Amount.** The decline of the average amounts spent by customers for Energy deals is concerning, but not alarming or unexpected. Over time, many existing customers (and some newer ones) are looking to leverage their existing technologies for lower project costs. Many of our customers have asked about using offshore resources in India and China, allowing them to buy the same amount of product or services for less cost. However, this trend should be monitored: ideally, it should flatten in the coming years, and not decline precipitously.
 
-**4. QUESTION: This is the question from one of the previous sections: If the COUNT of WON deals rose from 2016 to 2017, as reflected in the BAR charts, then why do the LINE charts (tracked over time broken down by quarter) show a steady decline from 2016 to 2017?** I haven't been able to address this question.
+
 
