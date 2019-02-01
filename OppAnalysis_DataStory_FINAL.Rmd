@@ -12,7 +12,7 @@ date: "January 23, 2019"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, FINALCLEANUP, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, DATAPREP, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ## IMPORTING THE SPREADSHEET
 
 library(readxl)
@@ -102,7 +102,56 @@ opps_revised_2019 <- opps_revised_2019 %>%
 opps_revised_2019 <- opps_revised_2019 %>% 
   mutate(close_year=year(close_date), close_month=month(close_date), combo_date=paste(close_year, close_month, sep="_"))
 
+opps_revised_2019 <- opps_revised_2019 %>%
+  mutate(
+    fiscal_qtr = case_when(
+      fiscal_quarter == "Q1" ~ .20,
+      fiscal_quarter == "Q2" ~ .40,
+      fiscal_quarter == "Q3" ~ .60,
+      fiscal_quarter == "Q4" ~ .80,
+    )
+  )
 
+opps_revised_2019 <- opps_revised_2019 %>% 
+  mutate(close_year=year(close_date), close_month=month(close_date), combo_date=paste(close_year, close_month, sep="_"), combo_qtr=as.numeric(fiscal_year)+fiscal_qtr)
+
+#opps_revised_2019 <- opps_revised_2019 %>% 
+#  mutate(close_year=year(close_date), close_month=month(close_date), combo_date=paste(close_year, close_month, sep="_"), combo_qtr=quarter(close_date, with_year=TRUE))
+
+opps_combo_qtr <- opps_revised_2019 %>% 
+  filter(stage_simple=="WON", industry_simple!="Everything Else") %>%
+  group_by(combo_qtr, industry_simple) %>%
+  summarize (countWon=n(),
+             sumWon=sum(expected_revenue_usd), 
+             meanWon=mean(expected_revenue_usd), 
+             medianWon=median(expected_revenue_usd),
+             maxWon=max(expected_revenue_usd),
+             minWon=min(expected_revenue_usd)) %>%
+  ungroup()
+
+opps_combo_month <- opps_revised_2019 %>% 
+  filter(stage_simple=="WON", industry_simple!="Everything Else") %>%
+  group_by(combo_date, industry_simple) %>%
+  summarize (countWon=n(),
+             sumWon=sum(expected_revenue_usd), 
+             meanWon=mean(expected_revenue_usd), 
+             medianWon=median(expected_revenue_usd),
+             maxWon=max(expected_revenue_usd),
+             minWon=min(expected_revenue_usd)) %>%
+  ungroup()
+
+opps_combo_industry_country <- opps_revised_2019 %>% 
+  filter(stage_simple=="WON", industry_simple!="Everything Else") %>%
+  group_by(combo_qtr, industry_simple, billing_country) %>%
+  summarize (countWon=n(),
+             sumWon=sum(expected_revenue_usd), 
+             meanWon=mean(expected_revenue_usd), 
+             medianWon=median(expected_revenue_usd),
+             maxWon=max(expected_revenue_usd),
+             minWon=min(expected_revenue_usd)) %>%
+  ungroup()
+
+opps_leading_countries <- subset(opps_combo_industry_country, billing_country %in% c("US", "GB", "CA", "FR", "DE", "AU"))
 
 ```
 
@@ -118,7 +167,8 @@ The big question we want to know is: How are we doing? This big question can be 
 * Are there more WON opportunities, year after year, as opposed to LOST?
 * Are we winning more Energy and Engineering opportunities over time? And how do E&E sectors compare with wins for customers in other leading sectors (like Financial)?
 * Are we winning more money in each deal closed for Energy and Engineering accounts over time?
-Is the amount of money Energy and Engineering group seem to be making (based on won deals) in alignment with other business sectors groups?
+* What are the geographic trends for Energy and Engineering deals over the last 3 years?
+* Is the amount of money Energy and Engineering group seem to be making (based on won deals) in alignment with other business sectors groups?
 
 The following sections and charts should answer these questions, and should give us a good picture of how are Energy & Engineering business development is doing.
 
@@ -159,6 +209,7 @@ Across all industries, there is a dip in # of opportunities from 2017 to 2018, b
 ggplot(subset(opps_revised_2019,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = fiscal_year, fill=industry_simple)) + 
   geom_bar() +
   ggtitle("Count of Energy & Engineering WINS 2016-2018")
+
 ggplot(opps_revised_2019, aes(x = fiscal_year, fill=industry_simple)) + 
   geom_bar() +
   ggtitle("Count of Leading Sector WINS 2016-2018")
@@ -196,37 +247,51 @@ We created two new variables - combo_date and combo_quarter - which represent th
 
 We also excluded "Everything Else" from the chart results, because it skewed the results (since "Everything Else" is a catch-all for every other business sector).
 
-The first chart shows the trend of Number (Count) of deals WON in Energy and Engineering from 2016 to 2018. The second chart shows the same trend, but across the leading industries (like Financal) compared with E&E sectors.
+The first two charts show the Number (Count) of deals WON by financial quarter from 2016 to 2018, tracked for each of the leading business sectors. Across all industries there is a decline in the number of WON deals. The decline is steepest in Financial services customer.
+
+The second two charts shows the trend of Number (Count) of deals WON in Energy and Engineering from 2016 to 2018, isolating them separately from the other business sectors.
 
 
-```{r, COUNT_YEARMONTH, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+```{r, DEALCOUNTS, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 
-opps_revised_2019 <- opps_revised_2019 %>% 
-  mutate(close_year=year(close_date), close_month=month(close_date), combo_date=paste(close_year, close_month, sep="_"), combo_qtr=quarter(close_date, with_year=TRUE))
-
-opps_combo_qtr <- opps_revised_2019 %>% 
-  filter(stage_simple=="WON", industry_simple!="Everything Else") %>%
-  group_by(combo_qtr, industry_simple) %>%
-  summarize (countWon=n(),
-             sumWon=sum(expected_revenue_usd), 
-             meanWon=mean(expected_revenue_usd), 
-             medianWon=median(expected_revenue_usd),
-             maxWon=max(expected_revenue_usd),
-             minWon=min(expected_revenue_usd)) %>%
-  ungroup()
-
-
-ggplot(subset(opps_combo_qtr,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = combo_qtr, y = countWon, color=industry_simple)) +
-  geom_line() +
-  expand_limits(y = 0) +
+ggplot(opps_combo_qtr, aes(x = combo_qtr, y = countWon, color=industry_simple)) +
+  geom_point() +
+  scale_x_continuous(name="Financial Quarters") +
+  scale_y_continuous(name="Number of Deals (Count)") +
   geom_smooth(method="lm") +
-  ggtitle("Count of E&E Sectors WON by Fiscal Quarter 2016-2018")
+  ggtitle("POINT Count of Leading Sectors WON by Fiscal Quarter 2016-2018")
 
 ggplot(opps_combo_qtr, aes(x = combo_qtr, y = countWon, color=industry_simple)) +
   geom_line() +
-  expand_limits(y = 0) +
+  scale_x_continuous(name="Financial Quarters") +
+  scale_y_continuous(name="Number of Deals (Count)") +
   geom_smooth(method="lm") +
-  ggtitle("Count of Leading Sectors WON by Fiscal Quarter 2016-2018")
+  ggtitle("LINE Count of Leading Sectors WON by Fiscal Quarter 2016-2018")
+
+ggplot(subset(opps_combo_qtr,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = combo_qtr, y = countWon, color=industry_simple)) +
+  geom_point() +
+  scale_x_continuous(name="Financial Quarters") +
+  scale_y_continuous(name="Number of Deals (Count)") +
+  geom_smooth(method="lm") +
+  ggtitle("POINT Count of E&E Sectors WON by Fiscal Quarter 2016-2018")
+
+ggplot(subset(opps_combo_qtr,industry_simple %in% c("Energy" , "Utilities", "Engineering","Distribution")), aes(x = combo_qtr, y = countWon, color=industry_simple)) +
+  geom_line() +
+  scale_x_continuous(name="Financial Quarters") +
+  scale_y_continuous(name="Number of Deals (Count)") +
+  geom_smooth(method="lm") +
+  ggtitle("LINE Count of E&E Sectors WON by Fiscal Quarter 2016-2018")
+
+#ggplot(subset(opps_combo_month,industry_simple %in% c("Energy", "Engineering")), aes(x = combo_date, y = countWon, color=industry_simple)) +
+#  geom_point() +
+#  expand_limits(y = 0) +
+#  geom_smooth(method="lm") +
+#  ggtitle("POINT Count of E&E Sectors WON by Fiscal Month 2016-2018")
+
+#ggplot(subset(opps_combo_month,industry_simple %in% c("Energy", "Engineering")), aes(x = combo_date, y = countWon, color=industry_simple)) +
+#  geom_line() +
+# expand_limits(y = 0) +
+#  ggtitle("LINE Count of E&E Sectors WON by Fiscal Month 2016-2018")
 
 
 ```
@@ -243,26 +308,31 @@ The second pair of charts shows the MEAN amount of money per deal, tracked over 
 
 ```{r, AMOUNT_YEARMONTH, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 ggplot(subset(opps_combo_qtr,industry_simple %in% c("Energy" ,"Engineering")), aes(x = combo_qtr, y = sumWon, color=industry_simple)) +
-  geom_line() +
-  expand_limits(y = 0) +
+  geom_point() +
+  scale_x_continuous(name="Financial Quarters") +
+  scale_y_continuous(name="Total Amount (USD)") +
   geom_smooth(method="lm") +
   ggtitle("E&E Sectors: Sum Amounts of WON by Fiscal Quarter 2016-2018")
 
 ggplot(opps_combo_qtr, aes(x = combo_qtr, y = sumWon, color=industry_simple)) +
-  geom_line() +
-  expand_limits(y = 0) +
+  geom_point() +
+  scale_x_continuous(name="Financial Quarters") +
+  scale_y_continuous(name="Total Amount (USD)") +
   geom_smooth(method="lm") +
   ggtitle("All Sectors: Sum Amounts of WON by Fiscal Quarter 2016-2018")
   
 ggplot(subset(opps_combo_qtr,industry_simple %in% c("Energy" ,"Engineering")), aes(x = combo_qtr, y = meanWon, color=industry_simple)) +
-  geom_line() +
-  expand_limits(y = 0) +
+  geom_point() +
+  scale_x_continuous(name="Financial Quarters") +
+  scale_y_continuous(name="Average Amount (USD)") +
   geom_smooth(method="lm") +
   ggtitle("E&E Sectors: Mean Amounts of WON by Fiscal Quarter 2016-2018")
 
 ggplot(opps_combo_qtr, aes(x = combo_qtr, y = meanWon, color=industry_simple)) +
-  geom_line() +
-  expand_limits(y = 0) +
+  geom_point() +
+  scale_x_continuous(name="Financial Quarters") +
+  scale_y_continuous(name="Average Amount (USD)") +
+  geom_smooth(method="lm") +
   ggtitle("All Sectors: Mean Amounts of WON by Fiscal Quarter 2016-2018")
 
 ```
@@ -294,10 +364,48 @@ opps_revised_2019 %>%
              maxWon=max(expected_revenue_usd),
              minWon=min(expected_revenue_usd))
 
+ylab <- c(2.5, 5.0, 7.5, 10)
+
 ggplot(opps_revised_2019, aes(x = industry_simple, y = expected_revenue_usd)) +
   geom_boxplot() +
   scale_y_log10() +
-  ggtitle("Expected Revenue By Industry")
+  xlab("Industries") + ylab("Expected Revenue (USD)") +
+  ggtitle("Range of Expected Revenue Across All Sectors 2016-2018")
+
+
+ggplot(subset(opps_combo_qtr,industry_simple %in% c("Energy", "Engineering")), aes(x = combo_qtr, y = meanWon, color=industry_simple)) +
+  geom_point() +
+  scale_x_continuous(name="Financial Quarters") +
+  scale_y_continuous(name="Average Amount (USD)") +
+  geom_smooth(method="lm") +
+  ggtitle("Mean (Average) of E&E Sectors WON by Fiscal Quarter 2016-2018")
+
+```
+
+\newpage
+# Regional Trends
+[Back to Contents](#toc)
+
+*What are the geographic trends for Energy and Engineering deals over the last 3 years?*
+
+The two charts in this section track the activity and amounts for deals in their leading currencies, which reflect the country in which the deal was closed.
+
+The overall trend shows declining number of deals and generally declining amounts per deal across the leading geographic markets. However, there are notceable spikes in the average amounts for deals closed in Canada in 2018. The average amounts for Canada show a flat line over time, due to these spikes, which appear to represent deals closed for larger amounts on average.
+
+```{r, REGIONALTRENDS, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(subset(opps_leading_countries,industry_simple %in% c("Energy", "Engineering")), aes(x = combo_qtr, y = countWon, color=billing_country)) +
+  geom_point() +
+  scale_x_continuous(name="Financial Quarters") +
+  scale_y_continuous(name="Number of Deals", limits=c(0, 200)) +
+  geom_smooth(method="lm") +
+  ggtitle("Count of E&E Regions WON by Fiscal Quarter 2016-2018")
+
+ggplot(subset(opps_leading_countries,industry_simple %in% c("Energy", "Engineering")), aes(x = combo_qtr, y = meanWon, color=billing_country)) +
+  geom_point() +
+  scale_x_continuous(name="Financial Quarters") +
+  scale_y_continuous(name="Average Amount (USD)", limits=c(0, 500000)) +
+  geom_smooth(method="lm") +
+  ggtitle("Mean (Average) of E&E Regions WON by Fiscal Quarter 2016-2018")
 
 ```
 
@@ -312,11 +420,15 @@ We can draw the following conclusions based on the previous charts.
 * The 2017 number represents 2 companies merging together their opportunities, wins and losses.
 * The 2016 and 2018 numbers represent opportunities for a single company.
 
-Unfortunately, there is variable or data point in the dataset that identifies Company A deals and Company B deals in 2017. With more time (another year or two), it will be possible to better assess the overall direction of Energy and Engineering sales.
+*Unfortunately, there is variable or data point in the dataset that identifies Company A deals and Company B deals in 2017. With more time (another year or two), it will be possible to better assess the overall direction of Energy and Engineering sales.*
 
 **2. Sector Comparison.** Overall, the Energy and Engineering sectors represent significant proprotions of our business pipeline. While they are not the biggest sector (like Financial customers), they reflect heavily invested customer sector which we should continue to invest business development and product development resources.
 
 **3. Mean Amount.** The decline of the average amounts spent by customers for Energy deals is concerning, but not alarming or unexpected. Over time, many existing customers (and some newer ones) are looking to leverage their existing technologies for lower project costs. Many of our customers have asked about using offshore resources in India and China, allowing them to buy the same amount of product or services for less cost. However, this trend should be monitored: ideally, it should flatten in the coming years, and not decline precipitously.
 
+```{r, EXPERIMENT, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 
+
+
+```
 
