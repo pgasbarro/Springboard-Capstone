@@ -1,0 +1,43 @@
+---
+title: 'Gasbarro - Linear Regression - Exercise 0'
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+date: "February 18, 2019"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, DATAPREP, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+## IMPORTING THE DATA
+
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(readxl)
+library(stringr)
+library(lubridate)
+library(ggplot2)
+library(xts)
+library(scales)
+
+# Load the data
+statesData <- readRDS("dataSets/states.rds")
+
+# Select data for METRO areas and ENERGY consumption
+statesMetroEnergy <- subset(statesData, select = c("metro", "energy"))
+
+
+# Plot X=METRO against Y=ENERGY
+ggplot(statesMetroEnergy, aes(x=metro,y=energy)) +
+  geom_point()
+
+cor(statesMetroEnergy, use="pairwise")
+
+```
+

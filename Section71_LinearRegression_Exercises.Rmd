@@ -1,0 +1,202 @@
+---
+title: 'Gasbarro - Linear Regression - Exercise 0'
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+date: "February 18, 2019"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Exercise 0: Linear Regression
+
+## Load the STATES data
+
+```{r, 0.1, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+## IMPORTING THE DATA
+
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(readxl)
+library(stringr)
+library(lubridate)
+library(ggplot2)
+library(xts)
+library(scales)
+
+# Load the data
+statesData <- readRDS("dataSets/states.rds")
+
+```
+
+## Examine and plot the data before fitting the model
+```{r, 0.2, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+
+# Select data for METRO areas and ENERGY consumption
+statesMetroEnergy <- subset(statesData, select = c("metro", "energy"))
+
+summary(statesMetroEnergy)
+
+# Plot X=METRO against Y=ENERGY
+ggplot(statesMetroEnergy, aes(x=metro,y=energy)) +
+  geom_point()
+```
+
+## Print and interpret the model
+```{r, 0.3, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+
+cor(statesMetroEnergy, use="pairwise")
+
+modelMetroEnergy <- lm(energy ~ metro, data = statesMetroEnergy)
+
+summary(modelMetroEnergy)
+
+```
+
+## Plot the model to look for deviations from modeling assumptions
+```{r, DATAPREP, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+
+#Assuming we use the lm dataframe we just generated
+
+plot(modelMetroEnergy)
+
+# CAN YOU USE GGPLOT TO GENERATE THE SAME PLOTS?
+
+```
+
+## Select one or more additional predictors 
+Select one or more additional predictors to add to your model and repeat steps 1-3. Is this model significantly better than the model with metro as the only predictor?
+
+For this exercise, we're using DENSITY and INCOME
+
+```{r, 0.4, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+
+# Select data for METRO, ENERGY, DENSITY, and INCOME
+statesMetEnerDenInc <- subset(statesData, select = c("metro", "energy", "density", "income"))
+
+summary(statesMetEnerDenInc)
+
+# Plot X=METRO against Y=ENERGY
+ggplot(statesMetEnerDenInc, aes(x=density,y=energy)) +
+  geom_point()
+
+ggplot(statesMetEnerDenInc, aes(x=income,y=energy)) +
+  geom_point()
+
+cor(statesMetEnerDenInc, use="pairwise")
+
+modelDenEner <- lm(energy ~ density, data = statesMetEnerDenInc)
+
+summary(modelDenEner)
+
+plot(modelDenEner)
+```
+
+# Exercise 1
+
+## 1.1 Add on to the regression 
+Add on to the regression equation that you created in exercise 1 by generating an interaction term and testing the interaction.
+
+I used the following variables in my previous exercise:
+* Metro
+* Energy
+* Density
+* Income
+
+```{r, 1.1, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+
+# Use statesMetEnerDenInc
+#modelDenEner <- lm(energy ~ density, data = statesMetEnerDenInc)
+
+modelEnergyMetroXDensity <- lm(energy ~ metro * density, data = statesMetEnerDenInc)
+
+summary(modelEnergyMetroXDensity)
+
+plot(modelEnergyMetroXDensity)
+
+```
+
+
+## 1.2 Regions
+Try adding a region to the model. Are there significant differences across the four regions?
+
+? Any easier way to do naming conventions?
+
+```{r, 1.2, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+
+# Select data for METRO, ENERGY, DENSITY, INCOME, REGIONS
+statesMetEnerDenIncReg <- subset(statesData, select = c("metro", "energy", "density", "income","region"))
+
+modelEnergyMetroXDensityRegion <- lm(energy ~ metro * density + region, data = statesMetEnerDenIncReg)
+
+# I think we're supposed to use ANOVA for this exercise
+anova(modelEnergyMetroXDensityRegion)
+
+
+```
+
+# Exercise 2
+
+Load the NatHealth2011.rds data
+
+```{r, 2.0, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+
+NatHealth2011 <- readRDS("dataSets/NatHealth2011.rds")
+labs <- attributes(NatHealth2011)$labels
+
+```
+
+## 2.1 Use GLM
+Use glm to conduct a logistic regression to predict ever worked (everwrk) using age (age_p) and marital status (r_maritl).
+
+```{r, 2.1, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+
+# Select the 3 variables
+NH2011_WorkAgeMar <- subset(NatHealth2011, select = c("everwrk", "r_maritl", "age_p"))
+
+# Summary before transformation
+summary(NH2011_WorkAgeMar)
+
+# Transform using a factor on Work, and drop any unused levels in the Marital Status
+NH2011_WorkAgeMar <- transform(NH2011_WorkAgeMar, everwrk = factor(everwrk, levels = c("1 Yes", "2 No")), r_maritl = droplevels(r_maritl))
+
+Model_NH2011_WorkAgeMar <- glm(everwrk ~ age_p + r_maritl, data = NH2011_WorkAgeMar, family = "binomial")
+
+summary(Model_NH2011_WorkAgeMar)
+
+```
+
+#2.2 Working v Marital Prediction
+Predict the probability of working for each level of marital status.
+
+```{r, 2.2, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+
+# Install and Load the Effects library
+
+#install.packages("effects")
+library(effects)
+
+# Use Effect to predict the probability on the model from the previous exercise
+
+data.frame(Effect("r_maritl", Model_NH2011_WorkAgeMar))
+ 
+```
+
+
+# Exercise 3
+
+Where's the bh1996 dataset?
+
+```{r, 3.0, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+
+# Need to load a package called MULTILEVEL
+#install.packages("multilevel")
+data(bh1996, package="multilevel")
+ 
+```
