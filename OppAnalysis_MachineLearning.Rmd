@@ -1,0 +1,168 @@
+---
+title: "Gasbarro Capstone Project: Opportunities Analysis - Machine Learning"
+output:
+  pdf_document:
+    toc: yes
+date: "July 16, 2019"
+params:
+  symbol: Not Applicable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, LIBRARIES, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+## IMPORTING THE SPREADSHEET
+
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(readxl)
+library(stringr)
+library(lubridate)
+library(ggplot2)
+library(xts)
+library(scales)
+```
+
+```{r, LOAD_SPREADSHEETS, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+## IMPORTING THE SPREADSHEET
+opps_revised_2019 <- readRDS("opps_revised_2019.rds")
+#summary(opps_revised_2019)
+# Create a list of columns - this will be the column names
+columns <- c("industry","stage","amount","age")
+sample_sales_data1 <- read_excel("sample_sales_data.xlsx", sheet=1, col_names=columns, skip=1)
+#summary(sample_sales_data1)
+saveRDS(sample_sales_data1,file="sample_sales_data1.rds")
+```
+
+\newpage
+# Introduction
+[Back to Contents](#toc)
+
+In the previous assignments (see: OppAnalysis_DataStory_FINAL), we had explored various aspects of the dataset for sale opportunities. While some trends appeared to emerge (e.g. the number of WON opportunities seemed to decline over 3 years), there were outstanding factors (e.g. a company merger might have impacted sales data) and no strong correlation among the variables and observations.
+
+As we embark on the linear modeling and machine learning phase of this project, we'd like to answer 2 key questions.
+
+1. AGE. We had not used AGE in our previous data exploration and analysis. Age is the number of days between the start of the sale activity and the date when the opportunity is closed (WON, LOST). 
+Is there a relationship or correlation between
+1A. Age and how many deals are WON or LOST?
+1B. Age and Expected Revenue?
+
+2. LM and PREDICTION. 
+2A. If we know Industry, can we predict whether an opportunity will be WON or LOST, and how much the WON Expected Revenue might be?
+2B. If we know Industry and Age, can we predict whether an opportunity will be WON or LOST, and how much the WON Expected Revenue might be?
+
+
+The formula for prediction is based on the INPUT and the LM generated based on the variables in the dataset. The formula may be expressed as follows:
+*INPUT -> FUNCTION (LM Regression) -> OUTPUT*
+*Industry=Energy,Age=100 -> LM() -> Stage=?*
+
+\newpage
+# Sample Sales Data: Perfectly Prepared
+[Back to Contents](#toc)
+
+Before we use the real Opportunities data set, we wanted to see what the correlation and linear modeling would look like on a "perfect" data set, one in which there is a strong correlation between the variables data.
+
+The Sample Sales Data has four variables: Industry, Stage, Amount, Days
+* All the Energy rows have stage=WON, Amount=250000, and Days=30
+* All the Engineering rows have stage=WIP, Amount=100000, and Days=15
+* All the Distribution rows have stage=LOST, Amount=0, and Days=6
+
+Obviously, this is a perfectly clustered dataset which would not exist in the real world (or maybe it would, at the best software sales company). It gives a good example for us of what strong correlation, clustering, and LM would look like.
+
+\newpage
+## Is there a correlation between AGE and AMOUNT? 
+[Back to Contents](#toc)
+There should be. The number should be a very high correlation, quite close to 1.0 (or 100%).
+```{r, SAMPLE_SALES_CORRELATIONS, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+cor(sample_sales_data1$age, sample_sales_data1$amount)
+```
+
+When we plot this data in a scatterplot, the results shows a very clean, smooth line as expected.
+```{r, SAMPLE_SALES_GGPLOT, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(sample_sales_data1, aes(x=age, y=amount)) +
+  geom_point() +
+  geom_smooth(method="lm")
+```
+
+\newpage
+## Linear Model for Sample Data 
+[Back to Contents](#toc)
+Lets build a linear model! This LM formula will be based on Amount against Age.
+```{r, SAMPLE_SALES_LM, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+lm_amount <- lm(amount ~ age, data=sample_sales_data1)
+print(lm_amount)
+```
+
+Can we use the LM formula to predict an amount, based on the age? In the example below, we created a data frame that has Age=30. We would expect the predict result, based on the LM formula, to be around $250,000.
+```{r, SAMPLE_SALES_LM_PREDICT, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+newsalesdata <- data.frame(age=30)
+predict(lm_amount, newsalesdata)
+```
+
+**QUESTION: What is considered a strong Intercept and/or value for LM?**
+
+\newpage
+## Clustering the Sample Data 
+[Back to Contents](#toc)
+The sample data is intentionally clustered closely between all the variables. How would this look in a scatterplot? This gives us a perfect example to compare the actual Opportunities sales data against.
+
+```{r, SAMPLE_SALES_KMEANS, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+# First, separate the quantitative data from the qualitative
+age_amount<-sample_sales_data1[3:4]
+industry<-sample_sales_data1$industry
+stage<-sample_sales_data1$stage
+
+# Next, use kmeans to cluster the data into 3 parts (since we already know there are 3)
+km_sales<-kmeans(age_amount, 3)
+table(industry, km_sales$cluster)
+ggplot(age_amount, aes(x=age,y=amount,col=km_sales$cluster)) +
+  geom_point()
+```
+
+
+\newpage
+# Opportunities: Correlation Between AGE and EXPECTED REVENUE? 
+[Back to Contents](#toc)
+Let's work with the real sales data in Opportunities.
+
+Is there a strong correlation between the AGE and the EXPECTED REVENUE?
+Why do we see NA in this result?
+```{r, Opps_Correlation, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+cor(opps_revised_2019$age, opps_revised_2019$expected_revenue_usd)
+```
+
+\newpage
+# Opportunities: Correlation Between AGE and STAGE (WON or LOST)? 
+[Back to Contents](#toc)
+
+We've been using correlation against purely quantitive data (age, amount).
+What if we want the correlation between quantitative data (age) and qualitative data(stage)? E.g. Is there a correlation between the Age of the opportunity, and whether the opportunity is WON or LOST?
+
+\newpage
+# Opportunities: Linear Model - Expected Revenue and Industry 
+[Back to Contents](#toc)
+
+```{r, SimpleLM, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+
+# Replace all NA values in industry_simple
+#is.na(opps_revised_2019$industry_simple)
+opps_revised_2019$industry_simple[is.na(opps_revised_2019$industry_simple)] <- "Everything Else"
+#is.na(opps_revised_2019$stage_simple)
+
+# Simple Linear Model Forecasted Amount by Industry
+lm_forecasted_industry <- lm(forecasted_amount_usd ~ industry_simple, data=opps_revised_2019)
+lm_forecasted_industry 
+
+#unseen01 <- data.frame(industry_simple="Energy")
+
+#predict(lm_forecasted_industry, unseen01)
+
+```
+
+```{r, SaveOurWork, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+saveRDS(sample_sales_data1,file="sample_sales_data1.rds")
+saveRDS(opps_revised_2019,file="opps_revised_2019.rds")
+```
