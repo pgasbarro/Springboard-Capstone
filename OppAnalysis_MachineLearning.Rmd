@@ -3,7 +3,7 @@ title: "Gasbarro Capstone Project: Opportunities Analysis - Machine Learning"
 output:
   pdf_document:
     toc: yes
-date: "July 16, 2019"
+date: "August 2, 2019"
 params:
   symbol: Not Applicable
 ---
@@ -35,6 +35,9 @@ columns <- c("industry","stage","amount","age")
 sample_sales_data1 <- read_excel("sample_sales_data.xlsx", sheet=1, col_names=columns, skip=1)
 #summary(sample_sales_data1)
 saveRDS(sample_sales_data1,file="sample_sales_data1.rds")
+# First select only the opportunities that were WON
+opps_won_2019 <- opps_revised_2019 %>% filter(stage_simple=='WON',expected_revenue_usd<50000000,expected_revenue_usd>0)
+
 ```
 
 \newpage
@@ -53,7 +56,6 @@ Is there a relationship or correlation between
 2. LM and PREDICTION. 
 2A. If we know Industry, can we predict whether an opportunity will be WON or LOST, and how much the WON Expected Revenue might be?
 2B. If we know Industry and Age, can we predict whether an opportunity will be WON or LOST, and how much the WON Expected Revenue might be?
-
 
 The formula for prediction is based on the INPUT and the LM generated based on the variables in the dataset. The formula may be expressed as follows:
 *INPUT -> FUNCTION (LM Regression) -> OUTPUT*
@@ -93,76 +95,118 @@ ggplot(sample_sales_data1, aes(x=age, y=amount)) +
 Lets build a linear model! This LM formula will be based on Amount against Age.
 ```{r, SAMPLE_SALES_LM, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
 lm_amount <- lm(amount ~ age, data=sample_sales_data1)
-print(lm_amount)
+summary(lm_amount)
+mean(sample_sales_data1$amount) == mean(fitted.values(lm_amount))
+mean(residuals(lm_amount))
 ```
 
-Can we use the LM formula to predict an amount, based on the age? In the example below, we created a data frame that has Age=30. We would expect the predict result, based on the LM formula, to be around $250,000.
+Can we use the LM formula to predict an amount as a function of age? In the example below, we created a data frame that has Age=30. We would expect the predict result, based on the LM formula, to be around $250,000.
 ```{r, SAMPLE_SALES_LM_PREDICT, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
 newsalesdata <- data.frame(age=30)
 predict(lm_amount, newsalesdata)
 ```
 
-**QUESTION: What is considered a strong Intercept and/or value for LM?**
+\newpage
+# Opportunities: Correlation 
+[Back to Contents](#toc)
+Now let's work with the real sales data in Opportunities.
+
+Is there a strong correlation between the AGE and the EXPECTED REVENUE among WON? The correlation is `r cor(opps_won_2019$age, opps_won_2019$expected_revenue_usd)`, which doesn't seem that significant.
+
+What does the relationship look like when we plot using geom_point? It appears there is some correlation, as shown by the graph below.
+```{r, Opps_ggplot_age_exprev, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(data = opps_won_2019, aes(x = age, y = expected_revenue_usd)) +
+  geom_point() +
+  scale_y_log10()
+```
 
 \newpage
-## Clustering the Sample Data 
+# Opportunities: Linear Model
 [Back to Contents](#toc)
-The sample data is intentionally clustered closely between all the variables. How would this look in a scatterplot? This gives us a perfect example to compare the actual Opportunities sales data against.
 
-```{r, SAMPLE_SALES_KMEANS, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
-# First, separate the quantitative data from the qualitative
-age_amount<-sample_sales_data1[3:4]
-industry<-sample_sales_data1$industry
-stage<-sample_sales_data1$stage
+We'll now create a linear model of the Expected Revenue as a function of Age. The Summar is printed below the code.
 
-# Next, use kmeans to cluster the data into 3 parts (since we already know there are 3)
-km_sales<-kmeans(age_amount, 3)
-table(industry, km_sales$cluster)
-ggplot(age_amount, aes(x=age,y=amount,col=km_sales$cluster)) +
-  geom_point()
+```{r, Opps_LinearModel, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+ageMod <- lm(expected_revenue_usd ~ age, data=opps_won_2019)
+summary(ageMod)
+ageMod_Intercept <- coef(ageMod)["(Intercept)"]
+ageMod_Slope <- coef(ageMod)["age"]
+
+```
+
+The Intercept and slope numbers are interesting. While these numbers are large, neither of them seems to tell us whether this model is strong or weak.
+
+The residual standard errors are quite high, indicating a lot of variance between the slope and the actual values in the data frame, suggesting that the linear model isn't very strong.
+
+Finally, the R-squared values are barely .03 (on a scale of 0 to 1). Compared against the near-perfect linear model in our Sample Sales Set, which had an R-squared value of over .9, this seems to confirm that the model is not strong, nor will it's predictions be accurate.
+
+But let's try anyway. :-)
+
+\newpage
+# Opportunities: Prediction
+[Back to Contents](#toc)
+
+We'll prepare a data frame with a new Age value, then run a prediction using the linear model ageMod generated in the previous exercise.
+
+```{r, Opps_Predict, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+new_age <- data.frame(age=100)
+new_age_predict <- predict(ageMod, newdata=new_age)
+```
+Based on the formula in the linear model, if the Age is 100 days, then the Expected Revenue for a WON deal is expected to be ```r new_age_predict```.
+
+Thinking out loud: this model seems too simplistic. It is based solely on a single variable, Age. Other variables might impact the price in combination with Age, and offer a better model for making predictions.
+
+\newpage
+# Opportunities: Multiple Regression
+[Back to Contents](#toc)
+
+Here is a scatterplot of Expected Revenue for WON opportunities, against Age and Industry Simple. In the first graph, the industry Everything Else dominates and masks the visbility of the other industries. In the second graph, Everything Else is excluded, giving us a better picture of the other industries.
+
+```{r, Opps_ggplot_age_indus, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(data = opps_won_2019, aes(x = age, y = expected_revenue_usd, col=industry_simple)) +
+  geom_point() +
+  scale_y_log10()
+
+ggplot(data = subset(opps_won_2019,industry_simple %in% c("Transportation" , "Utilities", "Engineering","Distribution")), aes(x = age, y = expected_revenue_usd, col=industry_simple)) +
+  geom_point() +
+  scale_y_log10()
+```
+
+We'll generate a linear model, adding Industry Simple as a factor to the original formula.
+
+```{r, Opps_LM_AgeIndustry, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+ageIndustryMod <- lm(expected_revenue_usd ~ age + factor(industry_simple), data=opps_won_2019)
+summary(ageIndustryMod)
+ageIndustryMod_Intercept <- coef(ageMod)["(Intercept)"]
+ageIndustryMod_Slope <- coef(ageMod)["age"]
+
+```
+The Residual Standard Error seems in alignment with the previous linear model for Revenue and Age. What's interesting is the Multiple R-Squared has risen from 0.02 to almost 0.04. The number is still quite small, but this suggests that adding additional variables produces a model that will have more valid or accurate predict results.
+
+The graphs below show the linear model applied against all Industries, then against the focused industries (excluding Everything Else).
+```{r, Opps_ggplot_age_indus_lm, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
+ggplot(data = opps_won_2019, aes(x = age, y = expected_revenue_usd, col=industry_simple)) +
+  geom_point() +
+  scale_y_log10() +
+  geom_smooth(method="lm")
+
+ggplot(data = subset(opps_won_2019,industry_simple %in% c("Transportation" , "Utilities", "Engineering","Distribution")), aes(x = age, y = expected_revenue_usd, col=industry_simple)) +
+  geom_point() +
+  scale_y_log10() +
+  geom_smooth(method="lm")
 ```
 
 
 \newpage
-# Opportunities: Correlation Between AGE and EXPECTED REVENUE? 
-[Back to Contents](#toc)
-Let's work with the real sales data in Opportunities.
-
-Is there a strong correlation between the AGE and the EXPECTED REVENUE?
-Why do we see NA in this result?
-```{r, Opps_Correlation, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
-cor(opps_revised_2019$age, opps_revised_2019$expected_revenue_usd)
-```
-
-\newpage
-# Opportunities: Correlation Between AGE and STAGE (WON or LOST)? 
+# Conclusion: Significant or Unusual?
 [Back to Contents](#toc)
 
-We've been using correlation against purely quantitive data (age, amount).
-What if we want the correlation between quantitative data (age) and qualitative data(stage)? E.g. Is there a correlation between the Age of the opportunity, and whether the opportunity is WON or LOST?
+We created a simple linear model for Expected Revenue and Age, then modified it to include a factor variable (Industry Simple). The initial results appear to show that these models are weak, would not be reliable for analysis or predicatability.
 
-\newpage
-# Opportunities: Linear Model - Expected Revenue and Industry 
-[Back to Contents](#toc)
-
-```{r, SimpleLM, echo=TRUE, warning=FALSE, error=FALSE, message=FALSE}
-
-# Replace all NA values in industry_simple
-#is.na(opps_revised_2019$industry_simple)
-opps_revised_2019$industry_simple[is.na(opps_revised_2019$industry_simple)] <- "Everything Else"
-#is.na(opps_revised_2019$stage_simple)
-
-# Simple Linear Model Forecasted Amount by Industry
-lm_forecasted_industry <- lm(forecasted_amount_usd ~ industry_simple, data=opps_revised_2019)
-lm_forecasted_industry 
-
-#unseen01 <- data.frame(industry_simple="Energy")
-
-#predict(lm_forecasted_industry, unseen01)
-
-```
+However, there appeared to be improvement when we added the factor Industry to the simpler linear model. This suggests that adding additional variables in some combination, or re-scoping and combining other variables (numericals like Forecasted Amount or factors like Stage and Currency) might produce models that are stronger, and cab eused to identify patterns, trends, and possible predictyions for future behavior.
 
 ```{r, SaveOurWork, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
 saveRDS(sample_sales_data1,file="sample_sales_data1.rds")
 saveRDS(opps_revised_2019,file="opps_revised_2019.rds")
+saveRDS(opps_won_2019,file="opps_won_2019.rds")
 ```
